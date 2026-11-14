@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Bricolage_Grotesque, Geist_Mono, Instrument_Sans } from 'next/font/google';
+import { Inter, JetBrains_Mono } from 'next/font/google';
 
 import { Providers } from '@/components/providers';
 import { cn } from '@/lib/utils';
@@ -7,53 +7,47 @@ import { cn } from '@/lib/utils';
 import './globals.css';
 
 /**
- * The same three roles the native app uses. Loaded through `next/font` so they
- * are self-hosted and the balance figures do not reflow on first paint.
+ * Two roles, loaded through `next/font` so they are self-hosted and numbers do
+ * not reflow on first paint: Inter for text and titles, JetBrains Mono for every
+ * figure the user might compare against another figure.
  */
-const bricolage = Bricolage_Grotesque({
-  subsets: ['latin'],
-  weight: ['600', '700'],
-  variable: '--font-bricolage',
-  display: 'swap',
-});
-
-const instrument = Instrument_Sans({
+const inter = Inter({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
-  variable: '--font-instrument',
+  variable: '--font-inter',
   display: 'swap',
 });
 
-const geistMono = Geist_Mono({
+const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
   weight: ['400', '500'],
-  variable: '--font-geist-mono',
+  variable: '--font-jetbrains-mono',
   display: 'swap',
 });
 
 const description =
-  'One position per company, split into the part you can actually put to work onchain and the part your brokerage only lets you watch.';
+  'Build a stock portfolio, write the rules it follows, and see exactly when it drifts. Simulated portfolios; strategies published onchain.';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://tradetokenstocks.vercel.app'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'),
   title: {
-    default: 'TradeTokenStocks — consolidated equity exposure',
-    template: '%s · TradeTokenStocks',
+    default: 'ORVYN — Portfolios, programmed',
+    template: '%s · ORVYN',
   },
   description,
-  applicationName: 'TradeTokenStocks',
+  applicationName: 'ORVYN',
   openGraph: {
-    title: 'TradeTokenStocks — consolidated equity exposure',
+    title: 'ORVYN — Portfolios, programmed',
     description,
     type: 'website',
-    siteName: 'TradeTokenStocks',
+    siteName: 'ORVYN',
   },
-  twitter: { card: 'summary_large_image', title: 'TradeTokenStocks', description },
+  twitter: { card: 'summary_large_image', title: 'ORVYN', description },
   robots: { index: true, follow: true },
 };
 
 export const viewport: Viewport = {
-  themeColor: '#0A0B0D',
+  themeColor: '#111214',
   colorScheme: 'dark',
 };
 
@@ -63,7 +57,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="en"
       // `dark` is unconditional: the product has one theme, and the class is
       // here only so primitives' `dark:` branches resolve.
-      className={cn('dark', bricolage.variable, instrument.variable, geistMono.variable)}
+      className={cn('dark', inter.variable, jetbrainsMono.variable)}
       suppressHydrationWarning>
       <body className="min-h-dvh bg-background text-foreground">
         <Providers>{children}</Providers>

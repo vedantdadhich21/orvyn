@@ -5,21 +5,25 @@
 
 @theme {
   /* Surfaces and accents. */
-  --color-bg: #0A0B0D;
-  --color-surface: #101216;
-  --color-surface-sunken: #0C0E12;
-  --color-text: #F2F3F5;
-  --color-cobalt: #5E7CFF;
-  --color-cobalt-deep: #3F4FD6;
-  --color-cobalt-text: #8DA2FF;
-  --color-cobalt-dim: #93A6FF;
-  --color-violet: #8E63FF;
+  --color-bg: #111214;
+  --color-surface: #17191D;
+  --color-surface-sunken: #0E1013;
+  --color-text: #F5F6F7;
+  --color-brand: #2BD98B;
+  --color-brand-deep: #1E8F63;
+  --color-brand-soft: #6FE7B4;
+  --color-brand-dim: #8FF0C6;
+  --color-cobalt: #2BD98B;
+  --color-cobalt-deep: #1E8F63;
+  --color-cobalt-text: #6FE7B4;
+  --color-cobalt-dim: #8FF0C6;
+  --color-violet: #1E8F63;
   --color-positive: #4ADE8B;
   --color-amber: #E0A33C;
   --color-amber-bright: #FFB066;
 
   /* Type colour scale — hierarchy is alpha on one ink. */
-  --color-ink-primary: #F2F3F5;
+  --color-ink-primary: #F5F6F7;
   --color-ink-secondary: rgba(242,243,245,0.62);
   --color-ink-tertiary: rgba(242,243,245,0.48);
   --color-ink-quaternary: rgba(242,243,245,0.42);
@@ -36,33 +40,33 @@
   --color-fill-press: rgba(255,255,255,0.035);
 
   /* Ambient field ramps, dark -> light. */
-  --color-ramp-portfolio-1: #141B40;
-  --color-ramp-portfolio-2: #2C3A8E;
-  --color-ramp-portfolio-3: #6E88FF;
-  --color-ramp-company-1: #141A3C;
-  --color-ramp-company-2: #303385;
-  --color-ramp-company-3: #8A78FF;
-  --color-ramp-strategy-1: #101733;
-  --color-ramp-strategy-2: #1F2A66;
-  --color-ramp-strategy-3: #4F6BF0;
+  --color-ramp-portfolio-1: #0F241B;
+  --color-ramp-portfolio-2: #17684A;
+  --color-ramp-portfolio-3: #2BD98B;
+  --color-ramp-company-1: #0E2018;
+  --color-ramp-company-2: #155A3C;
+  --color-ramp-company-3: #4FE0A3;
+  --color-ramp-strategy-1: #0C1B15;
+  --color-ramp-strategy-2: #124A34;
+  --color-ramp-strategy-3: #1E8F63;
   --color-ramp-corporate-action-1: #2E1C12;
   --color-ramp-corporate-action-2: #8A4020;
   --color-ramp-corporate-action-3: #FFB066;
-  --color-ramp-delegation-1: #171135;
-  --color-ramp-delegation-2: #3f2f8b;
-  --color-ramp-delegation-3: #8E63FF;
-  --color-ramp-connections-1: #0E2A33;
-  --color-ramp-connections-2: #1A5C6E;
-  --color-ramp-connections-3: #5AD5D0;
-  --color-ramp-wallet-1: #131233;
-  --color-ramp-wallet-2: #2A2B7A;
-  --color-ramp-wallet-3: #6E6BFF;
+  --color-ramp-delegation-1: #0E2119;
+  --color-ramp-delegation-2: #1B5C43;
+  --color-ramp-delegation-3: #37B98A;
+  --color-ramp-connections-1: #0D2420;
+  --color-ramp-connections-2: #16584C;
+  --color-ramp-connections-3: #5AD5C0;
+  --color-ramp-wallet-1: #0C1A16;
+  --color-ramp-wallet-2: #123F32;
+  --color-ramp-wallet-3: #2FA37A;
   --color-ramp-funding-1: #0E2A1E;
   --color-ramp-funding-2: #1C6440;
   --color-ramp-funding-3: #4ADE8B;
-  --color-ramp-sign-in-1: #101838;
-  --color-ramp-sign-in-2: #243180;
-  --color-ramp-sign-in-3: #5E7CFF;
+  --color-ramp-sign-in-1: #0F241B;
+  --color-ramp-sign-in-2: #17684A;
+  --color-ramp-sign-in-3: #2BD98B;
 
   /* Radii. */
   --radius-sm: 12px;

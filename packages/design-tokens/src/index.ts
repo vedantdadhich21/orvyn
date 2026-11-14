@@ -13,28 +13,41 @@
 
 export const palette = {
   /** Page background. Everything sits on this. */
-  bg: '#0A0B0D',
+  bg: '#111214',
   /** Raised card surface — the holdings list, sheets, panels. */
-  surface: '#101216',
+  surface: '#17191D',
   /** Recessed surface, used behind the nav bar's glass. */
-  surfaceSunken: '#0C0E12',
+  surfaceSunken: '#0E1013',
 
-  text: '#F2F3F5',
+  text: '#F5F6F7',
 
-  /** Primary accent. Onchain / allocatable / actionable. */
-  cobalt: '#5E7CFF',
-  /** Gradient terminus for cobalt fills (buttons, the wallet card, the FAB). */
-  cobaltDeep: '#3F4FD6',
-  /** Cobalt as text on dark — links, active values. */
-  cobaltText: '#8DA2FF',
-  /** Cobalt on chips and monospace ids. */
-  cobaltDim: '#93A6FF',
+  /**
+   * Primary brand colour. Named `brand`, not `accent`, because shadcn already
+   * owns `--color-accent` for hover surfaces.
+   */
+  brand: '#2BD98B',
+  /** Gradient terminus for brand fills (buttons, the mark). */
+  brandDeep: '#1E8F63',
+  /** Brand colour as text on dark — links, active values. */
+  brandSoft: '#6FE7B4',
+  /** Brand colour on chips and monospace ids. */
+  brandDim: '#8FF0C6',
 
-  /** Violet, the second executable tint — partner mints, the avatar gradient. */
-  violet: '#8E63FF',
+  /**
+   * Legacy aliases. The screens inherited from TradeTokenStocks still reference
+   * these names; they point at the accent so old routes render in the current
+   * brand. New code should use `accent*`.
+   */
+  cobalt: '#2BD98B',
+  cobaltDeep: '#1E8F63',
+  cobaltText: '#6FE7B4',
+  cobaltDim: '#8FF0C6',
+
+  /** Legacy second tint, kept for avatar and mark gradients. */
+  violet: '#1E8F63',
 
   positive: '#4ADE8B',
-  /** Corporate actions, sandbox badges, "needs review". */
+  /** Corporate actions, simulated badges, "needs review". */
   amber: '#E0A33C',
   amberBright: '#FFB066',
 } as const;
@@ -82,24 +95,24 @@ export const fill = {
  * the screen rather than the hue.
  */
 export const ramps = {
-  /** Portfolio and sign-in. Cobalt — the executable/onchain accent. */
-  portfolio: ['#141B40', '#2C3A8E', '#6E88FF'],
-  /** Company detail. Violet-leaning: both legs shown there are executable. */
-  company: ['#141A3C', '#303385', '#8A78FF'],
-  /** Strategy builder chart. Dimmer, because values are read off it. */
-  strategy: ['#101733', '#1F2A66', '#4F6BF0'],
-  /** Corporate actions. Warm — the only non-cobalt state in the product. */
+  /** Home and sign-in. The accent field, dimmer than the mark itself. */
+  portfolio: ['#0F241B', '#17684A', '#2BD98B'],
+  /** Company detail. A cooler green, so two legs still read as distinct. */
+  company: ['#0E2018', '#155A3C', '#4FE0A3'],
+  /** Strategy chart. Dimmer, because values are read off it. */
+  strategy: ['#0C1B15', '#124A34', '#1E8F63'],
+  /** Corporate actions. Warm — the only non-green state in the product. */
   corporateAction: ['#2E1C12', '#8A4020', '#FFB066'],
-  /** Delegation. Violet, matching the scoped-permission accent. */
-  delegation: ['#171135', '#3f2f8b', '#8E63FF'],
-  /** Connections. Teal — the only place the product talks about data pipes. */
-  connections: ['#0E2A33', '#1A5C6E', '#5AD5D0'],
-  /** Wallet and security. Deep indigo: colder and more locked-down than cobalt. */
-  wallet: ['#131233', '#2A2B7A', '#6E6BFF'],
+  /** Delegation. A muted green. */
+  delegation: ['#0E2119', '#1B5C43', '#37B98A'],
+  /** Connections. Teal-green — the one place the product talks about data pipes. */
+  connections: ['#0D2420', '#16584C', '#5AD5C0'],
+  /** Wallet and security. Deep, lock-like green. */
+  wallet: ['#0C1A16', '#123F32', '#2FA37A'],
   /** Funding. Green, because this is the one screen about money arriving. */
   funding: ['#0E2A1E', '#1C6440', '#4ADE8B'],
-  /** Sign-in. Cobalt, wider and dimmer than the portfolio field. */
-  signIn: ['#101838', '#243180', '#5E7CFF'],
+  /** Sign-in. The accent field, wider and dimmer. */
+  signIn: ['#0F241B', '#17684A', '#2BD98B'],
 } as const satisfies Record<string, readonly [string, string, string]>;
 
 export const radius = {
@@ -134,16 +147,16 @@ export const space = {
  * constants live with the loader rather than here.
  */
 export const typography = {
-  /** Bricolage Grotesque — the big balance number and screen titles only. */
-  display: { family: 'Bricolage Grotesque', weights: [600, 700] },
-  /** Instrument Sans — all UI text. */
-  sans: { family: 'Instrument Sans', weights: [400, 500, 600, 700] },
+  /** Inter — the big balance number, screen titles and all UI text. */
+  display: { family: 'Inter', weights: [600, 700] },
+  /** Inter — all UI text. */
+  sans: { family: 'Inter', weights: [400, 500, 600, 700] },
   /**
-   * Geist Mono — every number the user might compare against another number.
-   * Tabular figures are the whole point: a value that animates must use this
-   * or it will jitter.
+   * JetBrains Mono — every number the user might compare against another
+   * number. Tabular figures are the whole point: a value that animates must use
+   * this or it will jitter.
    */
-  mono: { family: 'Geist Mono', weights: [400, 500] },
+  mono: { family: 'JetBrains Mono', weights: [400, 500] },
 } as const;
 
 /**

@@ -1,50 +1,25 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { usePrivy } from '@privy-io/react-auth';
-import {
-  Activity,
-  CalendarClock,
-  Cable,
-  LayoutGrid,
-  LogOut,
-  ShieldCheck,
-  Wallet,
-  type LucideIcon,
-} from 'lucide-react';
+import { House, Plus, type LucideIcon } from 'lucide-react';
 
-import { Chip, PulseDot } from '@/components/primitives';
-import { Button } from '@/components/ui/button';
-import { isPrivyConfigured } from '@/lib/privy';
-import { useSession } from '@/lib/session';
+import { Chip } from '@/components/primitives';
 import { cn } from '@/lib/utils';
-import { useDisconnect } from 'wagmi';
 
 /**
- * The four places a person actually goes. Funding, automation and the SnapTrade
- * portal are reached from the screens that explain them rather than promoted
- * here — a rail with nine entries is a sitemap, not navigation.
+ * Two destinations, because Chapter 1 has two. The rest of the journey lives
+ * inside a portfolio rather than in the rail.
  */
 type Destination = {
   href: string;
   label: string;
   icon: LucideIcon;
-  /** Amber dot: something here is waiting on the user. */
-  badge?: boolean;
 };
 
-export const DESTINATIONS: Destination[] = [
-  { href: '/', label: 'Portfolio', icon: LayoutGrid },
-  { href: '/strategies', label: 'Strategies', icon: Activity },
-  { href: '/events', label: 'Events', icon: CalendarClock, badge: true },
-  { href: '/connections', label: 'Connections', icon: Cable },
-];
-
-const SECONDARY: Destination[] = [
-  { href: '/wallet', label: 'Wallet & security', icon: Wallet },
-  { href: '/automation', label: 'Automation', icon: ShieldCheck },
+const DESTINATIONS: Destination[] = [
+  { href: '/', label: 'Home', icon: House },
+  { href: '/create', label: 'Create', icon: Plus },
 ];
 
 function isActive(pathname: string, href: string) {
@@ -53,24 +28,23 @@ function isActive(pathname: string, href: string) {
 
 export function NavRail({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
-  const { mode } = useSession();
 
   return (
     <nav aria-label="Primary" className="flex h-full flex-col gap-1 p-3">
       <Link
         href="/"
         {...(onNavigate ? { onClick: onNavigate } : {})}
-        className="mb-4 flex items-center gap-2.5 rounded-lg px-2.5 py-2 transition-colors hover:bg-fill-press">
-        <span className="grid size-7 place-items-center rounded-md bg-gradient-to-br from-cobalt to-violet text-[11px] font-bold text-white">
-          T
+        className="mb-5 flex items-center gap-2.5 rounded-lg px-2.5 py-2 transition-colors hover:bg-fill-press">
+        {/* Orbit ring, not a stock arrow. */}
+        <span
+          aria-hidden
+          className="relative grid size-7 place-items-center rounded-full border border-brand/40">
+          <span className="size-1.5 rounded-full bg-brand" />
         </span>
-        <span className="text-[13.5px] leading-tight font-semibold">
-          TradeToken
-          <span className="block text-[10.5px] font-medium text-ink-faint">Stocks</span>
-        </span>
+        <span className="text-[13px] font-semibold tracking-[0.22em]">ORVYN</span>
       </Link>
 
-      {DESTINATIONS.map(({ href, label, icon: Icon, badge }) => {
+      {DESTINATIONS.map(({ href, label, icon: Icon }) => {
         const active = isActive(pathname, href);
         return (
           <Link
@@ -84,111 +58,20 @@ export function NavRail({ onNavigate }: { onNavigate?: () => void }) {
                 ? 'bg-fill-active text-ink-primary'
                 : 'text-ink-tertiary hover:bg-fill-press hover:text-ink-secondary',
             )}>
-            <Icon className={cn('size-4 shrink-0', active && 'text-cobalt-text')} aria-hidden />
-            <span className="truncate">{label}</span>
-            {badge ? (
-              <span
-                className="ml-auto size-1.5 shrink-0 rounded-full bg-amber"
-                aria-label="Needs review"
-              />
-            ) : null}
-          </Link>
-        );
-      })}
-
-      <div className="my-3 h-px bg-stroke-hairline" />
-
-      {SECONDARY.map(({ href, label, icon: Icon }) => {
-        const active = isActive(pathname, href);
-        return (
-          <Link
-            key={href}
-            href={href}
-            {...(onNavigate ? { onClick: onNavigate } : {})}
-            {...(active ? { 'aria-current': 'page' as const } : {})}
-            className={cn(
-              'flex items-center gap-3 rounded-lg px-2.5 py-2 text-[13px] transition-colors',
-              active
-                ? 'bg-fill-active text-ink-primary'
-                : 'text-ink-quaternary hover:bg-fill-press hover:text-ink-secondary',
-            )}>
-            <Icon className="size-4 shrink-0" aria-hidden />
+            <Icon className={cn('size-4 shrink-0', active && 'text-brand-soft')} aria-hidden />
             <span className="truncate">{label}</span>
           </Link>
         );
       })}
 
-      {/* Account and sandbox state sit at the foot of the rail. */}
       <div className="mt-auto space-y-2 pt-4">
-        <Chip tone="amber" className="w-full justify-center">
-          <PulseDot />
-          Sandbox — simulated data
+        <Chip tone="neutral" className="w-full justify-center">
+          Simulated · Base Sepolia
         </Chip>
-        <div className="flex items-center gap-1.5">
-          <Link
-            href={mode === 'authenticated' ? '/wallet' : '/sign-in'}
-            {...(onNavigate ? { onClick: onNavigate } : {})}
-            className="flex min-w-0 flex-1 items-center gap-2.5 rounded-lg border border-stroke-hairline bg-fill-subtle px-2.5 py-2 transition-colors hover:bg-fill-press">
-            <span className="grid size-7 shrink-0 place-items-center rounded-full bg-gradient-to-br from-cobalt to-violet text-[11px] font-semibold text-white">
-              {isPrivyConfigured ? <PrivyNavAvatar /> : 'M'}
-            </span>
-            <span className="min-w-0 text-[12.5px] leading-tight font-semibold">
-              {isPrivyConfigured ? <PrivyNavLabel /> : 'Maya'}
-              <span className="num block truncate text-[10.5px] font-normal text-ink-faint">
-                {mode === 'authenticated' ? 'Privy wallet' : '0x7A4C…9E21'}
-              </span>
-            </span>
-          </Link>
-          {isPrivyConfigured && mode === 'authenticated' ? <PrivyNavSignOut /> : null}
-        </div>
+        <p className="px-2.5 text-[10.5px] leading-relaxed text-ink-faint">
+          No money moves in Chapter 1.
+        </p>
       </div>
     </nav>
-  );
-}
-
-function PrivyNavAvatar() {
-  const { user } = usePrivy();
-  const email = user?.email?.address;
-  const initial = email ? (email[0]?.toUpperCase() ?? 'U') : 'M';
-  return <>{initial}</>;
-}
-
-function PrivyNavLabel() {
-  const { user } = usePrivy();
-  const email = user?.email?.address;
-  const name = email ? (email.split('@')[0] ?? 'User') : 'Maya';
-  return <span className="block truncate">{name}</span>;
-}
-
-function PrivyNavSignOut() {
-  const { ready, authenticated, logout } = usePrivy();
-  const { disconnect } = useDisconnect();
-  const { leaveSandbox } = useSession();
-  const [busy, setBusy] = useState(false);
-
-  if (!ready || !authenticated) return null;
-
-  return (
-    <Button
-      variant="ghost"
-      size="icon-sm"
-      disabled={busy}
-      onClick={async (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setBusy(true);
-        try {
-          await logout();
-          disconnect();
-          leaveSandbox();
-        } finally {
-          setBusy(false);
-        }
-      }}
-      title="Sign out of Privy"
-      aria-label="Sign out of Privy"
-      className="text-ink-tertiary hover:bg-fill-press hover:text-ink-primary">
-      <LogOut className="size-3.5" aria-hidden />
-    </Button>
   );
 }

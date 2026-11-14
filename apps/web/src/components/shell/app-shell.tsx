@@ -47,9 +47,9 @@ export function AppShell({
               <NavRail onNavigate={() => setOpen(false)} />
             </SheetContent>
           </Sheet>
-          <span className="text-[13.5px] font-semibold">TradeTokenStocks</span>
-          <span className="ml-auto rounded-pill border border-amber/25 bg-amber/10 px-2 py-0.5 text-[10.5px] font-semibold text-amber-bright">
-            Sandbox
+          <span className="text-[13px] font-semibold tracking-[0.18em]">ORVYN</span>
+          <span className="ml-auto rounded-pill border border-stroke-raised bg-fill-muted px-2 py-0.5 text-[10.5px] font-semibold text-ink-tertiary">
+            Simulated
           </span>
         </header>
 

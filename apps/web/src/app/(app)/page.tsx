@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
 
-import { PortfolioScreen } from '@/features/portfolio/portfolio-screen';
+import { HomeScreen } from '@/features/orvyn/home-screen';
 
 export const metadata: Metadata = {
-  title: 'Portfolio',
+  title: 'Portfolios, programmed',
   description:
-    'One position per company, split into the part you can put to work onchain and the part your brokerage only lets you watch.',
+    'Build a stock portfolio, write the rules it follows, and publish the strategy onchain. Simulated holdings; testnet only.',
 };
 
-export default function PortfolioPage() {
-  return <PortfolioScreen />;
+export default function HomePage() {
+  return <HomeScreen />;
 }

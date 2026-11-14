@@ -12,9 +12,9 @@
  * unmodified Radix dialog already looks like the rest of the application.
  */
 @theme inline {
-  --font-display: var(--font-bricolage);
-  --font-sans: var(--font-instrument);
-  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-inter);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
 
   --color-background: var(--color-bg);
   --color-foreground: var(--color-ink-primary);
@@ -22,8 +22,8 @@
   --color-card-foreground: var(--color-ink-primary);
   --color-popover: var(--color-surface);
   --color-popover-foreground: var(--color-ink-primary);
-  --color-primary: var(--color-cobalt);
-  --color-primary-foreground: #ffffff;
+  --color-primary: var(--color-brand);
+  --color-primary-foreground: #07130D;
   --color-secondary: var(--color-fill-muted);
   --color-secondary-foreground: var(--color-ink-primary);
   --color-muted: var(--color-fill-subtle);
@@ -33,7 +33,7 @@
   --color-destructive: var(--color-amber);
   --color-border: var(--color-stroke-hairline);
   --color-input: var(--color-stroke-raised);
-  --color-ring: var(--color-cobalt);
+  --color-ring: var(--color-brand);
 
   /* Radii beyond the design scale, for the few primitives that reach for them. */
   --radius-2xl: 28px;
@@ -70,19 +70,19 @@
    * acceptance criterion, so this is deliberately not `outline: none`.
    */
   :focus-visible {
-    outline: 2px solid var(--color-cobalt);
+    outline: 2px solid var(--color-brand);
     outline-offset: 2px;
     border-radius: 4px;
   }
 
   ::selection {
-    background: color-mix(in srgb, var(--color-cobalt) 40%, transparent);
+    background: color-mix(in srgb, var(--color-brand) 40%, transparent);
   }
 }
 
 @layer components {
   /*
-   * The 1px top highlight that sits on cards and cobalt buttons in the native
+   * The 1px top highlight that sits on cards and accent buttons in the native
    * app. It is what stops a dark surface reading as a flat hole.
    */
   .specular::before {

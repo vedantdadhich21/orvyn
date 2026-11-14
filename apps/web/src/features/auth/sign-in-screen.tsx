@@ -14,7 +14,7 @@ export function SignInScreen() {
   const router = useRouter();
   const { enterSandbox } = useSession();
 
-  const explore = () => {
+  const enter = () => {
     enterSandbox();
     router.push('/');
   };
@@ -23,33 +23,30 @@ export function SignInScreen() {
     <main className="relative grid min-h-dvh place-items-center overflow-hidden px-5 py-12">
       <div className="pointer-events-none absolute inset-0 -z-10 opacity-80">
         <DitherField ramp="signIn" cell={3} speed={0.035} intensity={0.78} />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(10,11,13,0.55)_44%,var(--color-bg)_78%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(17,18,20,0.55)_44%,var(--color-bg)_78%)]" />
       </div>
 
       <section className="specular relative w-full max-w-[430px] overflow-hidden rounded-2xl border border-stroke-raised bg-surface/90 p-6 shadow-2xl backdrop-blur-xl sm:p-8">
-        <div className="grid size-10 place-items-center rounded-xl bg-gradient-to-br from-cobalt to-violet text-sm font-bold text-white">
-          T
+        <div className="relative grid size-10 place-items-center rounded-full border border-brand/40">
+          <span className="size-2 rounded-full bg-brand" />
         </div>
         <Display as="h1" className="mt-7 text-3xl">
-          One company. Every position.
+          Portfolios, programmed.
         </Display>
         <p className="mt-3 text-[13px] leading-relaxed text-ink-secondary">
-          See what is usable onchain, what is only observed at a brokerage, and act on the right balance.
+          Build a stock portfolio, write the rules it follows, and see exactly when it drifts.
+          Simulated end to end.
         </p>
 
         <div className="mt-8 space-y-3">
-          {isPrivyConfigured ? <PrivySignIn /> : (
-            <Button size="lg" className="w-full" disabled>
-              Privy not configured
-            </Button>
-          )}
-          <Button size="lg" variant="outline" className="w-full" onClick={explore}>
-            Explore sandbox
+          {isPrivyConfigured ? <PrivySignIn /> : null}
+          <Button size="lg" variant={isPrivyConfigured ? 'outline' : 'default'} className="w-full" onClick={enter}>
+            Open ORVYN
           </Button>
         </div>
 
         <p className="mt-5 text-center text-[10.5px] leading-relaxed text-ink-faint">
-          Sandbox balances and transactions are simulated. No funds move.
+          Simulated portfolios. Testnet only. No funds move.
         </p>
       </section>
     </main>

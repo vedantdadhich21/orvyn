@@ -1,75 +1,53 @@
-# TradeTokenStocks
+# ORVYN
 
-TradeTokenStocks is a portfolio and Aqua strategy prototype for understanding one company position across two custody models: onchain holdings that can be allocated to a strategy, and brokerage holdings that are visible but read-only.
+**Portfolios, programmed.**
 
-The repository is a Bun/Turborepo monorepo with two clients:
+Most portfolios are a list of stocks and a lot of instinct. ORVYN adds the part that was
+missing: the rules. Pick what you own, set the limits, and see exactly when the portfolio
+drifts off plan.
 
-- `apps/mobile` — Expo SDK 57 and Expo Router
-- `apps/web` — Next.js 16 App Router
-- `packages/domain` — platform-neutral types, fixtures, formatting, and strategy math
-- `packages/design-tokens` — shared semantic colour, spacing, typography, and motion values
-- `packages/typescript-config` — strict TypeScript defaults for shared packages
-
-The default experience remains deterministic while deployment configuration is pending. An optional SnapTrade handoff supplies read-only brokerage holdings. Once the deployment manifest is marked live, both clients use the same domain flows for token acquisition, Aqua ship/dock, strategy balances, guarded quotes/swaps, multiplier demonstrations, and wallet portfolio aggregation.
-
-## Requirements
-
-- [Bun](https://bun.sh/) 1.3.14 or compatible
-- Node.js 20 or newer for the underlying Expo and Next.js toolchains
-- A development build for mobile features that rely on native modules
-
-## Setup
-
-Install the workspace dependencies from the repository root:
-
-```bash
-bun install
-```
-
-Copy the environment templates only for the clients you plan to run:
-
-```bash
-cp apps/mobile/.env.example apps/mobile/.env.local
-cp apps/web/.env.example apps/web/.env.local
-```
-
-The public Privy identifiers enable real authentication. The web app remains usable in sandbox mode without them. Never place secrets or private keys in a `NEXT_PUBLIC_*` or `EXPO_PUBLIC_*` variable.
-
-### Live brokerage handoff
-
-The Next.js route at `/api/snaptrade/portal` is the single backend for both clients. It verifies a Privy access token, registers the corresponding SnapTrade user, and generates a short-lived read-only Connection Portal URL. Web stores the server-encrypted SnapTrade credential in an HttpOnly cookie; mobile stores the same opaque value in SecureStore. The SnapTrade consumer key and user secret never enter either client.
-
-Configure the server-only values documented in `apps/web/.env.example`. Keep `SNAPTRADE_CREDENTIAL_ENCRYPTION_KEY` stable between deployments: changing it invalidates existing encrypted connection credentials. Mobile additionally needs `EXPO_PUBLIC_API_URL` pointed at the deployed HTTPS web origin.
-
-## Development
-
-```bash
-bun run dev          # both clients
-bun run dev:mobile   # Expo development server
-bun run dev:web      # Next.js at http://localhost:3000
-```
-
-Useful mobile commands live in `apps/mobile/package.json`, including `android`, `ios`, and `doctor`. The project uses Expo Continuous Native Generation, so `apps/mobile/ios` and `apps/mobile/android` are generated and must not be edited or committed.
-
-## Quality checks
-
-```bash
-bun run check        # generated tokens, lint, and strict typechecking
-bun run build        # production builds
-bun run verify       # check followed by build
-```
-
-Run `bun run tokens` after changing `packages/design-tokens`. The generated web CSS is committed so token drift is visible in review; `bun run check` verifies that it is current.
-
-## Architecture rules
-
-- Keep route files in `apps/mobile/src/app` and `apps/web/src/app`; put components, features, hooks, and utilities outside route directories.
-- Shared packages must remain platform-neutral. They cannot import React, React Native, Expo, Next.js, browser globals, or either Privy SDK.
-- Keep authentication adapters platform-local: `@privy-io/expo` on mobile and `@privy-io/react-auth` on web.
-- Never accept a client-provided redirect URL for SnapTrade. Web and mobile callbacks come from server-owned environment configuration.
-- Preserve the visual semantics: cobalt means onchain/actionable, while the quiet outlined treatment means brokerage/observed.
-- Add dependency and workflow commands to the relevant `package.json`; do not rely on undocumented one-off scripts.
+> **Simulated. Testnet only.** Chapter 1 uses demo reference prices and simulated holdings.
+> No money moves, no brokerage is connected, and nothing here is investment advice.
 
 ## Status
 
-The repository is an active ETHOnline 2026 prototype. Privy authentication, SnapTrade portfolio synchronization, and the live Aqua lifecycle are implemented. Sepolia Aqua, SwapVM, WETH, and USDC infrastructure is verified; live mode remains gated only on the Dinari/xStock deployment details and end-to-end funded-wallet rehearsal.
+Chapter 1, in progress. The home page and the stock picker are shipped. Allocation, rules,
+drift, simulation and the onchain strategy registry follow.
+
+## Stack
+
+- Next.js 16 (App Router), TypeScript, Tailwind CSS 4
+- shadcn/ui primitives on a shared design-token package
+- Bun + Turborepo monorepo
+
+The web app is `apps/web`. Shared colour, spacing and type values live in
+`packages/design-tokens`. The repo also contains an inherited native client
+(`apps/mobile`) that is not part of Chapter 1.
+
+## Run it locally
+
+```bash
+bun install
+bun run dev:web
+```
+
+Open <http://localhost:3000>. The app runs in simulation mode with no credentials
+configured; copy `apps/web/.env.example` to `apps/web/.env.local` only when a task needs a
+third-party key.
+
+## Checks
+
+```bash
+bun run check     # generated tokens, lint, strict typecheck
+bun run build     # production build
+bun test          # domain tests
+```
+
+## Attribution
+
+ORVYN is built on [TradeTokenStocks](https://github.com/TradeTokenStocks/ui), used under the
+MIT License. See [NOTICE.md](./NOTICE.md) and [LICENSE](./LICENSE).
+
+## Licence
+
+MIT.
