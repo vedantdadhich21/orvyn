@@ -43,6 +43,12 @@ bun run build     # production build
 bun test          # domain tests
 ```
 
+## Brand
+
+Palette, type and the logo files live in [BRAND.md](./BRAND.md). The mark, the
+favicon, the app icon and the profile picture are all exports of one outline, so
+they stay consistent by construction.
+
 ## Attribution
 
 ORVYN is built on [TradeTokenStocks](https://github.com/TradeTokenStocks/ui), used under the

@@ -41,8 +41,21 @@ export const metadata: Metadata = {
     description,
     type: 'website',
     siteName: 'ORVYN',
+    images: [
+      {
+        url: '/brand/og.png',
+        width: 1200,
+        height: 630,
+        alt: 'ORVYN — Portfolios, programmed.',
+      },
+    ],
   },
-  twitter: { card: 'summary_large_image', title: 'ORVYN', description },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'ORVYN',
+    description,
+    images: ['/brand/og.png'],
+  },
   robots: { index: true, follow: true },
 };
 

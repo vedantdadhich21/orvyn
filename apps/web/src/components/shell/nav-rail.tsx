@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { House, Plus, type LucideIcon } from 'lucide-react';
 
 import { Chip } from '@/components/primitives';
+import { OrvynMark } from '@/components/brand/mark';
 import { cn } from '@/lib/utils';
 
 /**
@@ -35,13 +36,8 @@ export function NavRail({ onNavigate }: { onNavigate?: () => void }) {
         href="/"
         {...(onNavigate ? { onClick: onNavigate } : {})}
         className="mb-5 flex items-center gap-2.5 rounded-lg px-2.5 py-2 transition-colors hover:bg-fill-press">
-        {/* Orbit ring, not a stock arrow. */}
-        <span
-          aria-hidden
-          className="relative grid size-7 place-items-center rounded-full border border-brand/40">
-          <span className="size-1.5 rounded-full bg-brand" />
-        </span>
-        <span className="text-[13px] font-semibold tracking-[0.22em]">ORVYN</span>
+        <OrvynMark size={22} />
+        <span className="text-[13px] font-semibold tracking-[0.16em]">ORVYN</span>
       </Link>
 
       {DESTINATIONS.map(({ href, label, icon: Icon }) => {
