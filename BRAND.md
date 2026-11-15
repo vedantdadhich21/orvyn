@@ -1,21 +1,21 @@
 # Brand
 
-Everything here is one system: the same green, the same two typefaces, and one
-mark — the **O** from the wordmark. The favicon, the app icon and the profile
-picture are all exports of that single outline, so they cannot drift apart.
+One mark, one green, two typefaces. The mark is a bold open ring in brand green
+sitting in a charcoal tile. On the app's charcoal surfaces the tile disappears
+and the ring carries the identity; on light backgrounds the tile does the work.
 
 ## Palette
 
 | Token | Hex | Use |
 |---|---|---|
-| Charcoal | `#111214` | Page and banner background. Everything sits on this. |
-| Brand | `#2BD98B` | The one accent. Marks the single most important thing in a frame. |
-| Brand deep | `#1E8F63` | Terminus for brand gradients; not for text on charcoal. |
+| Charcoal | `#111214` | Page, banner and tile background. |
+| Brand | `#2BD98B` | The ring, and one value per frame. Nothing else. |
+| Brand deep | `#1E8F63` | Gradient terminus only; not for text on charcoal. |
 | Ink | `#F5F6F7` | Body and display type. |
 | Muted | `#8A8F98` | Labels, captions, anything deliberately secondary. |
 
-Green is a spotlight, not a decoration. One green element per view — a button, a
-value, a dot. Two green elements competing is a bug.
+Green is a spotlight, not decoration. One green element per view — the ring, or
+a value, never both.
 
 ## Type
 
@@ -26,8 +26,7 @@ value, a dot. Two green elements competing is a bug.
 
 ## Assets
 
-All in `apps/web/public/brand`, plus the app icons that Next.js picks up
-automatically.
+In `apps/web/public/brand`, plus the two icons Next.js picks up automatically.
 
 | File | Size | Use |
 |---|---|---|
@@ -35,29 +34,37 @@ automatically.
 | `avatar-1000.png` | 1000×1000 | Higher-resolution profile picture |
 | `banner-1500x500.png` | 1500×500 | X header |
 | `og.png` | 1200×630 | Link previews |
-| `logo-wordmark.svg` | vector | Green O, white letters — for dark surfaces |
-| `logo-wordmark-white.svg` | vector | All white — one-colour use |
-| `logo-wordmark-mono.svg` | vector | All charcoal — for brand or light backgrounds |
-| `brand-sheet.png` | 1400×1180 | One-page reference |
+| `logo-mark.svg` | vector | The full mark: charcoal tile, green ring |
+| `logo-ring.svg` | vector | Ring alone, for charcoal surfaces |
+| `logo-wordmark.svg` | vector | Ring plus white name — dark surfaces |
+| `logo-wordmark-ink.svg` | vector | Ring plus charcoal name — light surfaces |
+| `logo-wordmark.png` | 1600px wide | Raster, for tools that will not take SVG |
+| `brand-sheet.png` | 1400×1340 | One-page reference |
 | `src/app/icon.svg` | vector | Favicon |
 | `src/app/apple-icon.png` | 180×180 | iOS home screen |
 
 ## Rules
 
-1. **The mark is the wordmark's O.** The avatar is that O inverted: charcoal on
-   brand green. No second symbol.
-2. **The avatar must read at 20px.** That is why it is a solid tile rather than a
-   thin outline, and why the O is large in the frame.
-3. **No rockets, coins, candlesticks, arrows or bar charts.** They are the
+1. **The mark is the ring.** Nothing is drawn inside it, and nothing is added
+   around it. Do not trace it, redraw it or change its stroke weight.
+2. **On charcoal, use the ring alone.** The tile is the same colour as the
+   surface, so including it only adds a faint square.
+3. **On light backgrounds, use the tile.** That is what the tile is for.
+4. **The ring is thick on purpose.** It has to survive 24px. Favicons use a
+   slightly larger ring (68% rather than 61%) because below 20px the counter
+   fills in and the mark turns into a green disc.
+5. **No rockets, coins, candlesticks, arrows or bar charts.** They are the
    fastest way to look like every other finance account.
-4. **Keep the banner's content in the middle band.** The X avatar overlaps the
+6. **Keep the banner's content in the middle band.** The X avatar overlaps the
    lower-left corner; nothing important goes there.
-5. **Do not stretch, re-colour or add effects to the wordmark.** If it needs to
-   sit on green, use the mono version.
 
 ## How these were made
 
+The mark is used exactly as supplied. Only the white canvas behind it was
+removed, and the tile scaled so its proportions (750 of 1024, ring at 61% of the
+tile) match the original.
+
 The wordmark is Inter 700 at optical size 32, shaped with HarfBuzz so the letter
 spacing is the type designer's rather than an approximation, then converted to
-outlines. No file in this folder depends on a font being installed, and the PNGs
-are rendered from the same SVGs, so the raster and vector match exactly.
+outlines. No file in this folder depends on a font being installed, and every
+PNG is rendered from the matching SVG, so raster and vector cannot drift.
