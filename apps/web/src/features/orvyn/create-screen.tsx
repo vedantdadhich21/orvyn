@@ -1,25 +1,43 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Check } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
 
 import { Chip, Display, Num, Panel, SectionLabel } from '@/components/primitives';
+import { createDraft, saveDraft, type PortfolioDraft } from '@/lib/orvyn/storage';
+import { useLatestDraft } from '@/lib/orvyn/use-draft';
 import { CASH_TICKER, STOCKS, formatPrice, type Stock } from '@/lib/orvyn/stocks';
 import { cn } from '@/lib/utils';
 
 /**
- * Step one of the builder: choose the lines. Weights are a separate step, so
- * there is deliberately no continue button here yet — a disabled control that
- * cannot go anywhere is worse than a sentence that says what comes next.
+ * Step one of the builder: name the portfolio and choose the lines. Edits are
+ * written straight to a local draft, so a refresh never drops them. Weights
+ * are a separate step, so the action here moves on to allocation rather than
+ * pretending the portfolio is complete.
  */
 export function CreateScreen() {
-  const [picked, setPicked] = useState<string[]>([]);
+  const router = useRouter();
+  const draft = useLatestDraft();
+  const tickers = draft?.tickers ?? [];
 
-  const toggle = (ticker: string) =>
-    setPicked((current) =>
-      current.includes(ticker) ? current.filter((item) => item !== ticker) : [...current, ticker],
-    );
+  const write = (next: PortfolioDraft) =>
+    saveDraft({ ...next, updatedAt: new Date().toISOString() });
+
+  const setName = (name: string) => write({ ...(draft ?? createDraft('', [])), name });
+
+  const toggle = (ticker: string) => {
+    const base = draft ?? createDraft('', []);
+    const next = tickers.includes(ticker)
+      ? tickers.filter((item) => item !== ticker)
+      : [...tickers, ticker];
+    const weights = { ...base.weights };
+    for (const item of next) if (weights[item] === undefined) weights[item] = 0;
+    for (const item of Object.keys(weights)) if (!next.includes(item)) delete weights[item];
+    write({ ...base, tickers: next, weights });
+  };
+
+  const canContinue = Boolean(draft && draft.name.trim() && tickers.length > 0);
 
   return (
     <div className="space-y-8">
@@ -33,7 +51,9 @@ export function CreateScreen() {
 
         <div className="mt-5 flex flex-wrap items-center gap-2">
           <Chip tone="neutral">Step 1 · Pick</Chip>
-          <span className="text-[11px] text-ink-faint">Nothing is saved yet</span>
+          <span className="text-[11px] text-ink-faint">
+            {tickers.length > 0 ? 'Draft restored' : 'Nothing saved yet'}
+          </span>
         </div>
 
         <Display as="h1" className="mt-4 text-3xl sm:text-4xl">
@@ -44,6 +64,25 @@ export function CreateScreen() {
           of it you keep.
         </p>
       </div>
+
+      <Panel className="p-5">
+        <label htmlFor="portfolio-name" className="text-[11px] font-semibold text-ink-secondary">
+          Portfolio name
+        </label>
+        <input
+          id="portfolio-name"
+          type="text"
+          value={draft?.name ?? ''}
+          onChange={(event) => setName(event.target.value)}
+          maxLength={80}
+          placeholder="Core holdings"
+          autoComplete="off"
+          className="mt-2 h-10 w-full rounded-lg border border-stroke-raised bg-surface-sunken px-3 text-[13px] text-ink-primary outline-none placeholder:text-ink-faint focus:border-brand/60"
+        />
+        <p className="mt-2 text-[11px] leading-relaxed text-ink-quaternary">
+          Saved in this browser. Nothing is uploaded and no account is needed.
+        </p>
+      </Panel>
 
       <section aria-label="Stock universe">
         <div className="flex items-baseline justify-between gap-3">
@@ -56,7 +95,7 @@ export function CreateScreen() {
             <li key={stock.ticker}>
               <StockCard
                 stock={stock}
-                selected={picked.includes(stock.ticker)}
+                selected={tickers.includes(stock.ticker)}
                 onToggle={() => toggle(stock.ticker)}
               />
             </li>
@@ -66,23 +105,33 @@ export function CreateScreen() {
 
       <section aria-label="Selection">
         <Panel className="p-5">
-          <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
               <SectionLabel as="h2">Selected</SectionLabel>
               <p className="mt-1.5 text-[12.5px] text-ink-secondary">
-                {picked.length === 0 ? (
+                {tickers.length === 0 ? (
                   'Nothing chosen yet.'
                 ) : (
                   <>
-                    <Num className="font-medium text-ink-primary">{picked.length}</Num> picked
-                    <span className="text-ink-quaternary"> · {picked.join(', ')}</span>
+                    <Num className="font-medium text-ink-primary">{tickers.length}</Num> picked
+                    <span className="text-ink-quaternary"> · {tickers.join(', ')}</span>
                   </>
                 )}
               </p>
             </div>
-            <p className="max-w-[28ch] text-[11px] leading-relaxed text-ink-faint">
-              Next: set the weights. They have to add up to 100%.
-            </p>
+            <div className="flex flex-col items-end gap-2">
+              <p className="max-w-[28ch] text-right text-[11px] leading-relaxed text-ink-faint">
+                Name the portfolio and pick at least one line to set its weights.
+              </p>
+              <button
+                type="button"
+                onClick={() => draft && router.push(`/allocate/${draft.id}`)}
+                disabled={!canContinue}
+                className="inline-flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-[12.5px] font-semibold text-[#07130D] transition-colors hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-40">
+                Set weights
+                <ArrowRight className="size-3.5" aria-hidden />
+              </button>
+            </div>
           </div>
         </Panel>
       </section>

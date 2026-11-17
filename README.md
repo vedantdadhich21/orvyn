@@ -11,8 +11,8 @@ drifts off plan.
 
 ## Status
 
-Chapter 1, in progress. The home page and the stock picker are shipped. Allocation, rules,
-drift, simulation and the onchain strategy registry follow.
+Chapter 1, in progress. The home page, the stock picker and locally saved drafts are
+shipped. Allocation, rules, drift, simulation and the onchain strategy registry follow.
 
 ## Stack
 
