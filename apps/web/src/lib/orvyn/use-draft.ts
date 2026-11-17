@@ -1,6 +1,6 @@
 'use client';
 
-import { useSyncExternalStore } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
 
 import { parseDrafts, readDraftsRaw, type PortfolioDraft } from './storage';
 
@@ -36,4 +36,20 @@ function getServerSnapshot(): null {
 
 export function useLatestDraft(): PortfolioDraft | null {
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+}
+
+/** A draft by id, so a direct link works even if it is not the newest one. */
+const byId = new Map<string, { raw: string; draft: PortfolioDraft | null }>();
+
+export function useDraft(id: string): PortfolioDraft | null {
+  const getForId = useCallback(() => {
+    const raw = readDraftsRaw();
+    const cached = byId.get(id);
+    if (cached && cached.raw === raw) return cached.draft;
+    const draft = parseDrafts(raw).find((item) => item.id === id) ?? null;
+    byId.set(id, { raw, draft });
+    return draft;
+  }, [id]);
+
+  return useSyncExternalStore(subscribe, getForId, getServerSnapshot);
 }
