@@ -65,7 +65,11 @@ export function parseDraft(value: unknown): PortfolioDraft | null {
   return {
     version: VERSION,
     id: value.id,
-    name: value.name.trim(),
+    // Kept exactly as typed. A trailing space is mid typing, and this value
+    // is read back after every keystroke, so trimming here would delete the
+    // space the user just pressed. Blank names are rejected where it matters,
+    // at the continue gate.
+    name: value.name,
     tickers,
     weights,
     updatedAt: typeof value.updatedAt === 'string' ? value.updatedAt : '',
