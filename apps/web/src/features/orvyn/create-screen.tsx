@@ -52,7 +52,7 @@ export function CreateScreen() {
         <div className="mt-5 flex flex-wrap items-center gap-2">
           <Chip tone="neutral">Step 1 · Pick</Chip>
           <span className="text-[11px] text-ink-faint">
-            {tickers.length > 0 ? 'Draft restored' : 'Nothing saved yet'}
+            {draft ? 'Saved locally' : 'Nothing saved yet'}
           </span>
         </div>
 
