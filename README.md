@@ -12,8 +12,9 @@ drifts off plan.
 ## Status
 
 Chapter 1, in progress. The home page, the stock picker, locally saved drafts, allocation
-sliders and the market data adapter are shipped, and the portfolio engine is tested. Rules,
-drift, simulation and the onchain strategy registry follow.
+sliders, the market data adapter and the portfolio engine are shipped. A portfolio now
+carries rules, and the dashboard shows what the book is worth and how far each line has
+drifted. Rebalance simulation and the onchain strategy registry follow.
 
 ## Stack
 
