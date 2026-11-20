@@ -1,3 +1,4 @@
+import { DEFAULT_RULES, clampRules, type Rules } from './rules';
 import { STOCKS } from './stocks';
 
 /**
@@ -20,6 +21,8 @@ export type PortfolioDraft = {
   name: string;
   tickers: string[];
   weights: Record<string, number>;
+  /** Added after drafts already existed, so old entries fall back to defaults. */
+  rules: Rules;
   updatedAt: string;
 };
 
@@ -72,6 +75,9 @@ export function parseDraft(value: unknown): PortfolioDraft | null {
     name: value.name,
     tickers,
     weights,
+    // A draft saved before rules existed has no field at all; it gets the
+    // defaults rather than being dropped, so an open tab survives a deploy.
+    rules: clampRules(value.rules),
     updatedAt: typeof value.updatedAt === 'string' ? value.updatedAt : '',
   };
 }
@@ -138,6 +144,7 @@ export function createDraft(name: string, tickers: string[]): PortfolioDraft {
     name: name.trim().slice(0, 80),
     tickers: cleanTickers,
     weights,
+    rules: DEFAULT_RULES,
     updatedAt: new Date().toISOString(),
   };
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 
@@ -19,9 +19,9 @@ import { cn } from '@/lib/utils';
  */
 export function AllocateScreen() {
   const { id } = useParams<{ id: string }>();
+  const router = useRouter();
   const draft = useDraft(id);
   const [ready, setReady] = useState(false);
-  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setReady(true), 0);
@@ -35,7 +35,6 @@ export function AllocateScreen() {
 
   const setWeight = (ticker: string, value: number) => {
     if (!draft) return;
-    setSaved(false);
     saveDraft({
       ...draft,
       weights: { ...draft.weights, [ticker]: value },
@@ -53,14 +52,13 @@ export function AllocateScreen() {
       remainder -= extra;
       next[ticker] = each + extra;
     }
-    setSaved(false);
     saveDraft({ ...draft, weights: next, updatedAt: new Date().toISOString() });
   };
 
   const confirm = () => {
     if (!draft || !complete) return;
     saveDraft({ ...draft, updatedAt: new Date().toISOString() });
-    setSaved(true);
+    router.push(`/rules/${draft.id}`);
   };
 
   return (
@@ -171,9 +169,7 @@ export function AllocateScreen() {
               <div>
                 <SectionLabel as="h2">Continue</SectionLabel>
                 <p className="mt-1.5 max-w-[34ch] text-[11.5px] leading-relaxed text-ink-quaternary">
-                  {saved
-                    ? 'Weights saved in this browser.'
-                    : 'Weights save as you move the sliders.'}
+                  Weights save as you move the sliders.
                 </p>
               </div>
               <button

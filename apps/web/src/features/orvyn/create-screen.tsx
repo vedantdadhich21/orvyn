@@ -121,7 +121,11 @@ export function CreateScreen() {
             </div>
             <div className="flex flex-col items-end gap-2">
               <p className="max-w-[28ch] text-right text-[11px] leading-relaxed text-ink-faint">
-                Name the portfolio and pick at least one line to set its weights.
+                {canContinue
+                  ? 'Next, the weights. Cash counts towards the total.'
+                  : draft?.name.trim()
+                    ? 'Pick at least one line to continue.'
+                    : 'Give the portfolio a name to continue.'}
               </p>
               <button
                 type="button"
