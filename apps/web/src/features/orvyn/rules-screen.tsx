@@ -107,13 +107,12 @@ export function RulesScreen() {
         <p className="mt-2 max-w-[54ch] text-[13px] leading-relaxed text-ink-secondary">
           {draft ? (
             <>
-              Three limits decide when{' '}
-              <span className="font-medium text-ink-primary">{draft.name}</span> has left its
-              plan. The chat model can suggest them later; this screen is where code has the
-              final word.
+              Three limits hold{' '}
+              <span className="font-medium text-ink-primary">{draft.name}</span> to its plan. The
+              chat model can suggest them later; this screen is where code has the final word.
             </>
           ) : (
-            'Three limits decide when a portfolio has left its plan. Code has the final word.'
+            'Three limits hold a portfolio to its plan. Code has the final word.'
           )}
         </p>
       </div>

@@ -41,7 +41,7 @@ export const SCENARIOS: readonly Scenario[] = [
   {
     id: 'selloff',
     label: 'Broad selloff',
-    detail: 'Everything falls, and the cash line is the only thing that holds.',
+    detail: 'Every line falls at once, and the book tilts.',
     moves: { NVDA: -0.18, MSFT: -0.06, GOOGL: -0.09, AMZN: -0.07, AAPL: -0.05, TSLA: -0.22 },
   },
 ];
