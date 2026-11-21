@@ -48,6 +48,12 @@ bun run build     # production build
 bun test          # domain tests
 ```
 
+## Contributing and bounties
+
+Bugs, security reports and pull requests are welcome. Accepted reports and merged changes
+get credit and early access; the full scope, process and reporting rules are in
+[BOUNTY.md](./BOUNTY.md). Posting about a report on X is appreciated, never required.
+
 ## Brand
 
 Palette, type and the logo files live in [BRAND.md](./BRAND.md). The mark, the
