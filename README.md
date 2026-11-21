@@ -16,8 +16,9 @@ sliders, the market data adapter and the portfolio engine are shipped. A portfol
 carries rules, the dashboard shows what the book is worth and how far each line has
 drifted, and the engine prices the trades a rebalance would need. A sentence can fill the
 limits, through the same check a model's answer would face. The simulate screen shows the
-trade list, the book on either side of it, and an approval that survives a refresh. The
-onchain strategy registry follows.
+trade list, the book on either side of it, and an approval that survives a refresh. A
+publish screen writes the strategy to a testnet registry and links to the transaction;
+the registry deployment address is the last external step.
 
 ## Stack
 
@@ -47,6 +48,29 @@ bun run check     # generated tokens, lint, strict typecheck
 bun run build     # production build
 bun test          # domain tests
 ```
+
+## The strategy registry
+
+`apps/web/contracts/StrategyRegistry.sol` is a small, ownerless contract on Base Sepolia.
+`publish(name, payload)` stores a readable line: the strategy name, its limits and its
+target weights. Holdings, units, prices and addresses never go onchain.
+
+Deploy it with a funded test wallet:
+
+```bash
+cd apps/web
+DEPLOYER_PRIVATE_KEY=0x... bun run contracts:deploy
+```
+
+The script checks the balance, prices the deployment, waits for the receipt, writes
+`apps/web/deployments/base-sepolia.json`, and prints the value for
+`NEXT_PUBLIC_STRATEGY_REGISTRY`. Set that variable locally and on the host, then redeploy;
+`/publish/<draft>` turns on. Without it the screen still shows the exact payload and says
+why it cannot sign.
+
+The compiled ABI and bytecode are committed in `src/lib/orvyn/strategy-registry.ts`.
+Regenerate them after a contract change with `bun run contracts:build`. The contract has no
+owner, no upgrade path and no function that moves funds.
 
 ## Contributing and bounties
 

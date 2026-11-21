@@ -239,6 +239,12 @@ export function SimulateScreen() {
                     Open the dashboard
                     <ArrowRight className="size-3.5" aria-hidden />
                   </Link>
+                  <Link
+                    href={`/publish/${id}`}
+                    className="inline-flex items-center gap-2 rounded-lg border border-stroke-raised px-4 py-2 text-[12.5px] font-semibold text-ink-secondary transition-colors hover:border-brand/40 hover:text-ink-primary">
+                    Publish the strategy
+                    <ArrowRight className="size-3.5" aria-hidden />
+                  </Link>
                   <button
                     type="button"
                     onClick={reset}

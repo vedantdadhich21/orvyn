@@ -3,6 +3,11 @@ import { ArrowRight } from 'lucide-react';
 
 import { DitherField } from '@/components/dither-field';
 import { Chip, Display, Num, Panel, SectionLabel } from '@/components/primitives';
+import {
+  explorerAddressUrl,
+  isRegistryConfigured,
+  strategyRegistryAddress,
+} from '@/lib/orvyn/registry';
 
 /**
  * Chapter 1 home. The only action is starting a portfolio; published
@@ -69,15 +74,30 @@ export function HomeScreen() {
           <span className="text-[11px] text-ink-faint">Base Sepolia</span>
         </div>
 
-        <Panel className="mt-3 px-6 py-10 text-center">
-          <p className="text-[13.5px] font-semibold text-ink-secondary">
-            Nothing published yet
-          </p>
-          <p className="mx-auto mt-1.5 max-w-[42ch] text-[11.5px] leading-relaxed text-ink-quaternary">
-            The registry has not been deployed. Build a portfolio now; publishing lands later in
-            Chapter 1.
-          </p>
-        </Panel>
+        {isRegistryConfigured && strategyRegistryAddress ? (
+          <Panel className="mt-3 px-6 py-8">
+            <p className="text-[13.5px] font-semibold text-ink-secondary">The registry is live</p>
+            <p className="mx-auto mt-1.5 max-w-[46ch] text-[11.5px] leading-relaxed text-ink-quaternary">
+              A published strategy is one readable line: its name, limits and target weights.
+              Holdings never leave the browser.
+            </p>
+            <a
+              href={explorerAddressUrl(strategyRegistryAddress)}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-stroke-raised px-3.5 py-2 text-[11.5px] font-semibold text-ink-secondary transition-colors hover:border-brand/40 hover:text-ink-primary">
+              Open the registry on BaseScan
+            </a>
+          </Panel>
+        ) : (
+          <Panel className="mt-3 px-6 py-10 text-center">
+            <p className="text-[13.5px] font-semibold text-ink-secondary">Nothing published yet</p>
+            <p className="mx-auto mt-1.5 max-w-[42ch] text-[11.5px] leading-relaxed text-ink-quaternary">
+              The registry is not configured in this build. Build a portfolio now; publishing
+              lands later in Chapter 1.
+            </p>
+          </Panel>
+        )}
       </section>
     </div>
   );
