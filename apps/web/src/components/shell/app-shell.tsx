@@ -61,8 +61,8 @@ export function AppShell({
             </SheetTrigger>
             <SheetContent
               side="left"
-              className="isolate w-[264px] max-w-[264px] border-stroke-raised p-0 shadow-[18px_0_48px_rgba(0,0,0,0.7)]"
-              style={{ backgroundColor: '#0C0E12' }}>
+              className="isolate border-stroke-raised p-0 shadow-[18px_0_48px_rgba(0,0,0,0.7)]"
+              style={{ backgroundColor: '#0C0E12', width: 228, maxWidth: 228 }}>
               <SheetTitle className="sr-only">Navigation</SheetTitle>
               <NavRail onNavigate={() => setOpen(false)} />
             </SheetContent>
