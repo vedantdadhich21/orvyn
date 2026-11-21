@@ -127,14 +127,18 @@ export function DashboardScreen() {
         {draft && complete ? (
           <div className="mt-4 flex flex-wrap items-center gap-2">
             <Link
+              href={`/simulate/${id}?scenario=${scenario.id}`}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-brand px-3.5 py-2 text-[11.5px] font-semibold text-[#07130D] transition-colors hover:bg-brand/90">
+              Run the rebalance
+              <ArrowRight className="size-3" aria-hidden />
+            </Link>
+            <Link
               href={`/publish/${id}`}
               className="inline-flex items-center gap-1.5 rounded-lg border border-stroke-raised px-3.5 py-2 text-[11.5px] font-semibold text-ink-secondary transition-colors hover:border-brand/40 hover:text-ink-primary">
               Publish the strategy
               <ArrowRight className="size-3" aria-hidden />
             </Link>
-            <span className="text-[10.5px] text-ink-faint">
-              Targets and rules only. Holdings stay in this browser.
-            </span>
+            <span className="text-[10.5px] text-ink-faint">A dry run. Nothing is sent.</span>
           </div>
         ) : null}
       </div>
