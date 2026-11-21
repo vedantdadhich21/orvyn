@@ -37,7 +37,11 @@ export function AppShell({
     };
     closeOnDesktop();
     desktop.addEventListener('change', closeOnDesktop);
-    return () => desktop.removeEventListener('change', closeOnDesktop);
+    window.addEventListener('resize', closeOnDesktop);
+    return () => {
+      desktop.removeEventListener('change', closeOnDesktop);
+      window.removeEventListener('resize', closeOnDesktop);
+    };
   }, []);
 
   return (
