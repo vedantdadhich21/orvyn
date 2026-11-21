@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { ArrowLeft, ArrowRight, Check, TriangleAlert } from 'lucide-react';
 
 import { Chip, Display, Num, Panel, SandboxNote, SectionLabel } from '@/components/primitives';
 import { Slider } from '@/components/ui/slider';
 import { CASH_TICKER, STOCKS } from '@/lib/orvyn/stocks';
 import { checkTargets, fromPercent, RULE_LIMITS, type Rules } from '@/lib/orvyn/rules';
+import { describeRules, parseRuleSentence, validateProposal } from '@/lib/orvyn/proposal';
 import { saveDraft, totalWeight } from '@/lib/orvyn/storage';
 import { useDraft } from '@/lib/orvyn/use-draft';
 import { cn } from '@/lib/utils';
@@ -51,6 +52,8 @@ export function RulesScreen() {
   const router = useRouter();
   const draft = useDraft(id);
   const [ready, setReady] = useState(false);
+  const [sentence, setSentence] = useState('');
+  const [note, setNote] = useState<{ tone: 'ok' | 'amber'; text: string } | null>(null);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setReady(true), 0);
@@ -80,6 +83,29 @@ export function RulesScreen() {
 
   // Read from the weights, not from the breach list: a half-finished plan has
   // no breaches to list, and a line over the limit should still look over it.
+  const readSentence = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!draft) return;
+
+    const { proposal } = parseRuleSentence(sentence);
+    if (Object.keys(proposal).length === 0) {
+      setNote({
+        tone: 'amber',
+        text: 'No limits found. Name a company limit, a cash floor or a drift band.',
+      });
+      return;
+    }
+
+    const check = validateProposal(proposal, draft.rules);
+    if (!check.ok) {
+      setNote({ tone: 'amber', text: check.problems.join(' ') });
+      return;
+    }
+
+    saveDraft({ ...draft, rules: check.rules, updatedAt: new Date().toISOString() });
+    setNote({ tone: 'ok', text: `Read ${describeRules(check.rules)}.` });
+  };
+
   const overCeiling = new Set(
     tickers.filter(
       (ticker) => ticker !== CASH_TICKER && (weights[ticker] ?? 0) > (rules?.ceilingPct ?? 100),
@@ -200,6 +226,56 @@ export function RulesScreen() {
                 <ArrowRight className="size-3.5" aria-hidden />
               </Link>
             ) : null}
+          </Panel>
+
+          <Panel className="p-5">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <SectionLabel as="h2">Describe the limits</SectionLabel>
+                <p className="mt-1.5 max-w-[54ch] text-[11.5px] leading-relaxed text-ink-quaternary">
+                  One sentence, read into the three limits below. Nothing is applied that the
+                  rules check refuses.
+                </p>
+              </div>
+              <Chip tone="neutral">Read locally</Chip>
+            </div>
+
+            <form onSubmit={readSentence} className="mt-4 flex flex-col gap-2 sm:flex-row">
+              <label htmlFor="rule-sentence" className="sr-only">
+                Rule sentence
+              </label>
+              <input
+                id="rule-sentence"
+                type="text"
+                value={sentence}
+                onChange={(event) => setSentence(event.target.value)}
+                placeholder="No stock above 35%, keep 15% cash, rebalance past 4 points"
+                maxLength={160}
+                autoComplete="off"
+                className="h-10 min-w-0 flex-1 rounded-lg border border-stroke-raised bg-surface-sunken px-3 text-[13px] text-ink-primary outline-none placeholder:text-ink-faint focus:border-brand/60"
+              />
+              <button
+                type="submit"
+                className="h-10 shrink-0 rounded-lg border border-stroke-raised px-4 text-[12px] font-semibold text-ink-secondary transition-colors hover:border-brand/40 hover:text-ink-primary">
+                Read it
+              </button>
+            </form>
+
+            {note ? (
+              <p
+                role="status"
+                className={cn(
+                  'mt-2.5 text-[11.5px] leading-relaxed',
+                  note.tone === 'ok' ? 'text-positive' : 'text-amber-bright',
+                )}>
+                {note.text}
+              </p>
+            ) : (
+              <p className="mt-2.5 text-[10.5px] leading-relaxed text-ink-faint">
+                Read in this browser. A model can replace this reader later; the numbers still
+                go through the same check.
+              </p>
+            )}
           </Panel>
 
           <section aria-label="Rules" className="grid gap-3 lg:grid-cols-3">

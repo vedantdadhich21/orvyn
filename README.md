@@ -13,8 +13,10 @@ drifts off plan.
 
 Chapter 1, in progress. The home page, the stock picker, locally saved drafts, allocation
 sliders, the market data adapter and the portfolio engine are shipped. A portfolio now
-carries rules, and the dashboard shows what the book is worth and how far each line has
-drifted. Rebalance simulation and the onchain strategy registry follow.
+carries rules, the dashboard shows what the book is worth and how far each line has
+drifted, and the engine can price the trades a rebalance would need. A sentence can fill
+the limits, through the same check a model's answer would face. The rebalance screen and
+the onchain strategy registry follow.
 
 ## Stack
 
