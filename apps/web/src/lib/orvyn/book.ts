@@ -27,8 +27,13 @@ export function readBook(input: {
   rules: Rules;
   moves?: Record<string, number>;
   amount?: number;
+  /**
+   * A book that already exists, such as an approved simulation. When absent
+   * the plan is bought fresh at its own prices.
+   */
+  held?: Units;
 }): Book {
-  const units = buildUnits(input.targets, input.prices, input.amount ?? STARTING_NOTIONAL_USD);
+  const units = input.held ?? buildUnits(input.targets, input.prices, input.amount ?? STARTING_NOTIONAL_USD);
   const prices = applyMoves(input.prices, input.moves ?? {});
 
   return {

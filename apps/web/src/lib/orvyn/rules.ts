@@ -13,6 +13,7 @@
  * side of the line it is on.
  */
 import { CASH_TICKER } from './stocks';
+import { percentOfBook } from './format';
 import { currentWeights, drift as engineDrift, type Prices, type Units, type Weights } from './engine';
 
 export type Rules = {
@@ -188,4 +189,35 @@ export function needsRebalance(
     overCeiling,
     cashBelowFloor,
   };
+}
+
+/**
+ * The badge's reasons, in the product's own words. Shared so the dashboard
+ * and the simulate screen cannot explain the same report differently.
+ */
+export function rebalanceReasons(
+  report: RebalanceReport,
+  weights: Weights,
+  rules: Rules,
+): string[] {
+  const reasons: string[] = [];
+
+  for (const ticker of report.beyondBand) {
+    const moved = Math.abs((report.drift[ticker] ?? 0) * 100).toFixed(1);
+    reasons.push(
+      `${ticker} sits ${moved} points from target, past the ${rules.driftBandPct} point band.`,
+    );
+  }
+  for (const ticker of report.overCeiling) {
+    reasons.push(
+      `${ticker} is ${percentOfBook(weights[ticker] ?? 0)} of the book, over the ${rules.ceilingPct}% ceiling.`,
+    );
+  }
+  if (report.cashBelowFloor) {
+    reasons.push(
+      `Cash is ${percentOfBook(weights[CASH_TICKER] ?? 0)} of the book, under the ${rules.cashFloorPct}% floor.`,
+    );
+  }
+
+  return reasons;
 }

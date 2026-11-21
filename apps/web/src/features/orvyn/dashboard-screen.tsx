@@ -15,14 +15,18 @@ import {
   SandboxNote,
   SectionLabel,
 } from '@/components/primitives';
+import { appliedFor } from '@/lib/orvyn/applied';
 import { readBook } from '@/lib/orvyn/book';
+import { percentOfBook, pointsFromFraction } from '@/lib/orvyn/format';
 import { CASH_TICKER, STOCKS, formatPrice } from '@/lib/orvyn/stocks';
-import { fromPercent, type RebalanceReport, type Rules } from '@/lib/orvyn/rules';
+import { fromPercent, rebalanceReasons, type RebalanceReport, type Rules } from '@/lib/orvyn/rules';
 import { scenarioById, SCENARIOS, STARTING_NOTIONAL_USD } from '@/lib/orvyn/sim';
 import { totalWeight } from '@/lib/orvyn/storage';
+import { useApplied } from '@/lib/orvyn/use-applied';
 import { useDraft } from '@/lib/orvyn/use-draft';
 import { usePrices } from '@/lib/orvyn/use-prices';
 import { cn } from '@/lib/utils';
+import { ScenarioControl } from './scenario-control';
 
 /**
  * The drift dashboard. One book, one set of prices, one scenario dial.
@@ -41,23 +45,14 @@ const DONUT_RADIUS = (DONUT_SIZE - DONUT_STROKE) / 2;
 const DONUT_CIRCUMFERENCE = 2 * Math.PI * DONUT_RADIUS;
 const DONUT_GAP = 3;
 
-/** Points, to one decimal, with the sign kept for comparisons. */
-function points(value: number): string {
-  const rounded = Math.round(value * 10) / 10;
-  return `${rounded > 0 ? '+' : ''}${rounded.toFixed(1)}`;
-}
-
-/** A share, to one decimal, without a trailing `.0`. */
-function share(fraction: number): string {
-  const rounded = Math.round(fraction * 1000) / 10;
-  return `${Number.isInteger(rounded) ? rounded : rounded.toFixed(1)}%`;
-}
-
 export function DashboardScreen() {
   const { id } = useParams<{ id: string }>();
   const draft = useDraft(id);
   const { prices, notice, retry } = usePrices();
-  const [scenarioId, setScenarioId] = useState(SCENARIOS[0]?.id ?? 'at-plan');
+  const applied = useApplied(id);
+  // An approval names the scenario it was read at, so returning to either
+  // screen lands on that scenario instead of a blank plan.
+  const [chosenScenario, setChosenScenario] = useState<string | null>(null);
   // The draft lives in localStorage, so the server has no way to know it. A
   // tick of patience keeps the first paint from flashing an error that is only
   // true for the server's half of the page.
@@ -72,7 +67,8 @@ export function DashboardScreen() {
   const weights = draft?.weights ?? {};
   const complete = totalWeight(weights, tickers) === 100;
   const rules = draft?.rules;
-  const scenario = scenarioById(scenarioId);
+  const scenario = scenarioById(chosenScenario ?? applied?.scenarioId ?? SCENARIOS[0]?.id ?? 'at-plan');
+  const approved = appliedFor(applied, scenario.id);
 
   /** Stocks first, cash last, so the neutral slice closes the ring. */
   const ordered = useMemo(
@@ -87,8 +83,9 @@ export function DashboardScreen() {
       prices,
       rules,
       moves: scenario.moves,
+      ...(approved ? { held: approved.units } : {}),
     });
-  }, [draft, rules, prices, complete, scenario]);
+  }, [draft, rules, prices, complete, scenario, approved]);
 
   const valueParts = formatPrice(book?.value ?? 0).split('.');
 
@@ -110,6 +107,12 @@ export function DashboardScreen() {
 
         <div className="mt-5 flex flex-wrap items-center gap-2">
           <Chip tone="neutral">Simulated book</Chip>
+          {approved ? (
+            <Chip tone="positive">
+              <Check className="size-3" aria-hidden />
+              Rebalanced
+            </Chip>
+          ) : null}
           <SandboxNote>Reference prices, not live quotes</SandboxNote>
         </div>
 
@@ -196,38 +199,18 @@ export function DashboardScreen() {
               </div>
 
               <div className="w-full sm:w-[340px]">
-                <SectionLabel as="h3">Simulate a market move</SectionLabel>
-                <div
-                  role="group"
-                  aria-label="Simulated market move"
-                  className="mt-2 flex gap-1 rounded-lg border border-stroke-hairline bg-fill-subtle p-1">
-                  {SCENARIOS.map((item) => {
-                    const active = item.id === scenario.id;
-                    return (
-                      <button
-                        key={item.id}
-                        type="button"
-                        aria-pressed={active}
-                        onClick={() => setScenarioId(item.id)}
-                        className={cn(
-                          'flex-1 rounded-md px-2 py-1.5 text-[11.5px] font-medium whitespace-nowrap transition-colors',
-                          active
-                            ? 'bg-fill-active text-ink-primary'
-                            : 'text-ink-secondary hover:bg-fill-press hover:text-ink-primary',
-                        )}>
-                        {item.label}
-                      </button>
-                    );
-                  })}
-                </div>
-                <p className="mt-2 text-[11px] leading-relaxed text-ink-quaternary">
-                  {scenario.detail}
-                </p>
+                <ScenarioControl scenario={scenario} onChange={setChosenScenario} />
               </div>
             </div>
           </Panel>
 
-          <RebalancePanel report={book.report} weights={book.weights} rules={rules} />
+          <RebalancePanel
+            report={book.report}
+            weights={book.weights}
+            rules={rules}
+            draftId={id}
+            simulated={approved !== null}
+          />
 
           <div className="grid gap-3 lg:grid-cols-2">
             <Panel className="p-5">
@@ -254,7 +237,7 @@ export function DashboardScreen() {
                           {stock?.name ?? 'Position'}
                         </span>
                         <Num className="shrink-0 text-ink-secondary">
-                          {share(book.weights[ticker] ?? 0)}
+                          {percentOfBook(book.weights[ticker] ?? 0)}
                         </Num>
                       </li>
                     );
@@ -303,7 +286,7 @@ export function DashboardScreen() {
                             'text-[11px] font-medium',
                             beyond ? 'text-amber-bright' : 'text-ink-faint',
                           )}>
-                          {points(delta * 100)} pts
+                          {pointsFromFraction(delta)} pts
                         </Num>
                       </div>
 
@@ -333,10 +316,10 @@ export function DashboardScreen() {
 
                       <div className="mt-1 flex justify-between text-[10px] text-ink-faint">
                         <span>
-                          <Num>{share(live)}</Num> live
+                          <Num>{percentOfBook(live)}</Num> live
                         </span>
                         <span>
-                          target <Num>{share(target)}</Num>
+                          target <Num>{percentOfBook(target)}</Num>
                         </span>
                       </div>
                     </li>
@@ -399,7 +382,7 @@ function Donut({
   });
 
   const label = ordered
-    .map((ticker) => `${ticker} ${share(weights[ticker] ?? 0)}`)
+    .map((ticker) => `${ticker} ${percentOfBook(weights[ticker] ?? 0)}`)
     .join(', ');
 
   return (
@@ -450,23 +433,16 @@ function RebalancePanel({
   report,
   weights,
   rules,
+  draftId,
+  simulated,
 }: {
   report: RebalanceReport;
   weights: Record<string, number>;
   rules: Rules;
+  draftId: string;
+  simulated: boolean;
 }) {
-  const reasons: string[] = [];
-
-  for (const ticker of report.beyondBand) {
-    const moved = Math.abs((report.drift[ticker] ?? 0) * 100).toFixed(1);
-    reasons.push(`${ticker} sits ${moved} points from target, past the ${rules.driftBandPct} point band.`);
-  }
-  for (const ticker of report.overCeiling) {
-    reasons.push(`${ticker} is ${share(weights[ticker] ?? 0)} of the book, over the ${rules.ceilingPct}% ceiling.`);
-  }
-  if (report.cashBelowFloor) {
-    reasons.push(`Cash is ${share(weights[CASH_TICKER] ?? 0)} of the book, under the ${rules.cashFloorPct}% floor.`);
-  }
+  const reasons = rebalanceReasons(report, weights, rules);
 
   return (
     <Panel className={cn('p-5', report.due ? 'border-amber/25' : 'border-positive/20')}>
@@ -491,10 +467,20 @@ function RebalancePanel({
             </ul>
           ) : (
             <p className="mt-3 max-w-[46ch] text-[12px] leading-relaxed text-ink-secondary">
-              Every line is inside its band, the ceiling and the cash floor at these prices. No
-              trade is owed.
+              {simulated
+                ? 'This is the approved simulation at these prices. Nothing was sent anywhere.'
+                : 'Every line is inside its band, the ceiling and the cash floor at these prices. No trade is owed.'}
             </p>
           )}
+
+          {report.due || simulated ? (
+            <Link
+              href={`/simulate/${draftId}`}
+              className="mt-4 inline-flex items-center gap-1.5 text-[12px] font-semibold text-brand-soft transition-colors hover:text-brand">
+              {simulated ? 'Open the simulation' : 'See the trades'}
+              <ArrowRight className="size-3.5" aria-hidden />
+            </Link>
+          ) : null}
         </div>
 
         <dl className="flex shrink-0 gap-5">
