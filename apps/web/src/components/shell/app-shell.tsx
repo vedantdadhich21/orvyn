@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Menu } from 'lucide-react';
 
 import { NavRail } from '@/components/shell/nav-rail';
@@ -24,6 +24,22 @@ export function AppShell({
 }) {
   const [open, setOpen] = useState(false);
 
+  /**
+   * The sheet belongs to the narrow layout. If a menu was open while the
+   * window grew past `lg`, the trigger disappears with the header but the
+   * modal would stay put, covering a page that no longer needs it. Close it
+   * as soon as the permanent rail takes over.
+   */
+  useEffect(() => {
+    const desktop = window.matchMedia('(min-width: 1024px)');
+    const closeOnDesktop = () => {
+      if (desktop.matches) setOpen(false);
+    };
+    closeOnDesktop();
+    desktop.addEventListener('change', closeOnDesktop);
+    return () => desktop.removeEventListener('change', closeOnDesktop);
+  }, []);
+
   return (
     <div className="flex min-h-dvh">
       <aside className="sticky top-0 hidden h-dvh w-[228px] shrink-0 border-r border-stroke-hairline bg-surface-sunken lg:block">
@@ -41,7 +57,7 @@ export function AppShell({
             </SheetTrigger>
             <SheetContent
               side="left"
-              className="isolate w-[264px] border-stroke-raised p-0 shadow-[18px_0_48px_rgba(0,0,0,0.7)]"
+              className="isolate w-[264px] max-w-[264px] border-stroke-raised p-0 shadow-[18px_0_48px_rgba(0,0,0,0.7)]"
               style={{ backgroundColor: '#0C0E12' }}>
               <SheetTitle className="sr-only">Navigation</SheetTitle>
               <NavRail onNavigate={() => setOpen(false)} />
