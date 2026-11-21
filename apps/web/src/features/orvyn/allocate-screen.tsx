@@ -125,7 +125,7 @@ export function AllocateScreen() {
                 <button
                   type="button"
                   onClick={splitEvenly}
-                  disabled={!draft || tickers.length === 0}
+                  disabled={!ready || !draft || tickers.length === 0}
                   className="rounded-lg border border-stroke-raised px-3 py-1.5 text-[11.5px] font-medium text-ink-secondary transition-colors hover:border-brand/40 hover:text-ink-primary disabled:cursor-not-allowed disabled:opacity-40">
                   Split evenly
                 </button>
@@ -175,7 +175,7 @@ export function AllocateScreen() {
               <button
                 type="button"
                 onClick={confirm}
-                disabled={!complete}
+                disabled={!ready || !complete}
                 className="inline-flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-[12.5px] font-semibold text-[#07130D] transition-colors hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-40">
                 Next
                 <ArrowRight className="size-3.5" aria-hidden />

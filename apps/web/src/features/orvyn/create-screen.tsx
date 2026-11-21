@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
 
 import { Chip, Display, Num, Panel, SectionLabel } from '@/components/primitives';
@@ -19,15 +20,30 @@ import { cn } from '@/lib/utils';
 export function CreateScreen() {
   const router = useRouter();
   const draft = useLatestDraft();
-  const tickers = draft?.tickers ?? [];
+  // localStorage is empty on the server, so the first client render must agree
+  // with that empty snapshot before the saved draft is allowed to change an
+  // attribute. Without this gate the continue button hydrates enabled against
+  // disabled HTML, and React keeps the server's attribute.
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    const timer = window.setTimeout(() => setReady(true), 0);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  const shown = ready ? draft : null;
+  const tickers = shown?.tickers ?? [];
 
   const write = (next: PortfolioDraft) =>
     saveDraft({ ...next, updatedAt: new Date().toISOString() });
 
-  const setName = (name: string) => write({ ...(draft ?? createDraft('', [])), name });
+  const setName = (name: string) => {
+    if (!ready) return;
+    write({ ...(shown ?? createDraft('', [])), name });
+  };
 
   const toggle = (ticker: string) => {
-    const base = draft ?? createDraft('', []);
+    if (!ready) return;
+    const base = shown ?? createDraft('', []);
     const next = tickers.includes(ticker)
       ? tickers.filter((item) => item !== ticker)
       : [...tickers, ticker];
@@ -37,7 +53,7 @@ export function CreateScreen() {
     write({ ...base, tickers: next, weights });
   };
 
-  const canContinue = Boolean(draft && draft.name.trim() && tickers.length > 0);
+  const canContinue = Boolean(shown && shown.name.trim() && tickers.length > 0);
 
   return (
     <div className="space-y-8">
@@ -52,7 +68,7 @@ export function CreateScreen() {
         <div className="mt-5 flex flex-wrap items-center gap-2">
           <Chip tone="neutral">Step 1 · Pick</Chip>
           <span className="text-[11px] text-ink-faint">
-            {draft ? 'Saved locally' : 'Nothing saved yet'}
+            {shown ? 'Saved locally' : 'Nothing saved yet'}
           </span>
         </div>
 
@@ -72,7 +88,7 @@ export function CreateScreen() {
         <input
           id="portfolio-name"
           type="text"
-          value={draft?.name ?? ''}
+          value={shown?.name ?? ''}
           onChange={(event) => setName(event.target.value)}
           maxLength={80}
           placeholder="Core holdings"
@@ -123,13 +139,13 @@ export function CreateScreen() {
               <p className="max-w-[28ch] text-right text-[11px] leading-relaxed text-ink-faint">
                 {canContinue
                   ? 'Next, the weights. Cash counts towards the total.'
-                  : draft?.name.trim()
+                  : shown?.name.trim()
                     ? 'Pick at least one line to continue.'
                     : 'Give the portfolio a name to continue.'}
               </p>
               <button
                 type="button"
-                onClick={() => draft && router.push(`/allocate/${draft.id}`)}
+                onClick={() => shown && router.push(`/allocate/${shown.id}`)}
                 disabled={!canContinue}
                 className="inline-flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-[12.5px] font-semibold text-[#07130D] transition-colors hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-40">
                 Set weights

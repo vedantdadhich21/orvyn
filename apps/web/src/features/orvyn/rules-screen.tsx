@@ -71,6 +71,9 @@ export function RulesScreen() {
   const breaches =
     complete && rules ? checkTargets(fromPercent(weights), rules) : [];
   const canContinue = Boolean(draft) && complete && breaches.length === 0;
+  // The saved draft arrives after hydration. Keep the button's attribute
+  // identical to the server's until the store has actually been read.
+  const canSubmit = ready && canContinue;
 
   const setRule = (key: keyof Rules, value: number) => {
     if (!draft) return;
@@ -382,7 +385,7 @@ export function RulesScreen() {
             <button
               type="button"
               onClick={() => router.push(`/portfolio/${id}`)}
-              disabled={!canContinue}
+              disabled={!canSubmit}
               className="inline-flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-[12.5px] font-semibold text-[#07130D] transition-colors hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-40">
               Open the dashboard
               <ArrowRight className="size-3.5" aria-hidden />
