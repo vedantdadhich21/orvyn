@@ -209,6 +209,7 @@ export function DashboardScreen() {
             weights={book.weights}
             rules={rules}
             draftId={id}
+            scenarioId={scenario.id}
             simulated={approved !== null}
           />
 
@@ -434,12 +435,14 @@ function RebalancePanel({
   weights,
   rules,
   draftId,
+  scenarioId,
   simulated,
 }: {
   report: RebalanceReport;
   weights: Record<string, number>;
   rules: Rules;
   draftId: string;
+  scenarioId: string;
   simulated: boolean;
 }) {
   const reasons = rebalanceReasons(report, weights, rules);
@@ -475,7 +478,7 @@ function RebalancePanel({
 
           {report.due || simulated ? (
             <Link
-              href={`/simulate/${draftId}`}
+              href={`/simulate/${draftId}?scenario=${scenarioId}`}
               className="mt-4 inline-flex items-center gap-1.5 text-[12px] font-semibold text-brand-soft transition-colors hover:text-brand">
               {simulated ? 'Open the simulation' : 'See the trades'}
               <ArrowRight className="size-3.5" aria-hidden />

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, ArrowRight, Check, RotateCcw, TriangleAlert } from 'lucide-react';
 
@@ -45,12 +45,16 @@ const stockName = (ticker: string) =>
 
 export function SimulateScreen() {
   const { id } = useParams<{ id: string }>();
+  const router = useRouter();
+  const search = useSearchParams();
   const draft = useDraft(id);
   const { prices, notice, retry } = usePrices();
   const applied = useApplied(id);
   // An approval names the scenario it was read at, so returning to either
   // screen lands on that scenario instead of a blank plan.
   const [chosenScenario, setChosenScenario] = useState<string | null>(null);
+  const requested = search.get('scenario');
+  const fromUrl = requested && SCENARIOS.some((item) => item.id === requested) ? requested : null;
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -61,7 +65,9 @@ export function SimulateScreen() {
   const tickers = useMemo(() => draft?.tickers ?? [], [draft]);
   const complete = totalWeight(draft?.weights ?? {}, tickers) === 100;
   const rules = draft?.rules;
-  const scenario = scenarioById(chosenScenario ?? applied?.scenarioId ?? SCENARIOS[0]?.id ?? 'at-plan');
+  const scenario = scenarioById(
+    chosenScenario ?? fromUrl ?? applied?.scenarioId ?? SCENARIOS[0]?.id ?? 'at-plan',
+  );
   const approved = applied && applied.scenarioId === scenario.id ? applied : null;
 
   const base = useMemo(() => {
@@ -100,6 +106,12 @@ export function SimulateScreen() {
       ...all.filter((ticker) => ticker === CASH_TICKER),
     ];
   }, [tickers, simulation]);
+
+  /** Choosing a scenario is a navigation, so a refresh and a share keep it. */
+  const chooseScenario = (next: string) => {
+    setChosenScenario(next);
+    router.replace(`/simulate/${id}?scenario=${next}`, { scroll: false });
+  };
 
   const approve = () => {
     if (!draft || !simulation) return;
@@ -248,7 +260,7 @@ export function SimulateScreen() {
                 </Num>
                 <p className="mt-1 text-[10.5px] text-ink-faint">Zero is on plan.</p>
                 <div className="mt-4">
-                  <ScenarioControl scenario={scenario} onChange={setChosenScenario} />
+                  <ScenarioControl scenario={scenario} onChange={chooseScenario} />
                 </div>
               </div>
             </div>
@@ -363,7 +375,7 @@ export function SimulateScreen() {
               </div>
 
               <div className="w-full sm:w-[320px]">
-                <ScenarioControl scenario={scenario} onChange={setChosenScenario} />
+                <ScenarioControl scenario={scenario} onChange={chooseScenario} />
               </div>
             </div>
           </Panel>

@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 
 import { SimulateScreen } from '@/features/orvyn/simulate-screen';
@@ -8,5 +9,10 @@ export const metadata: Metadata = {
 };
 
 export default function SimulatePage() {
-  return <SimulateScreen />;
+  // useSearchParams needs a boundary so the route can still be prerendered.
+  return (
+    <Suspense fallback={<p className="text-[13px] text-ink-tertiary">Reading the book…</p>}>
+      <SimulateScreen />
+    </Suspense>
+  );
 }
