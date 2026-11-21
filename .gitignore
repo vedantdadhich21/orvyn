@@ -51,3 +51,16 @@ apps/mobile/android/
 .env*
 
 docs/
+
+# motion work stays local — never push video, renders or the raea toolchain.
+# docs/ above already excludes the film sources, stills, renders and media/.
+# This block is the backstop for anything added elsewhere: force-add with
+# `git add -f` if a real product asset ever needs a video in the repo.
+*.mp4
+*.mov
+*.webm
+*.m4a
+*.wav
+
+# raea lives outside the repo (~/tools/raea); its caches are never code
+.raea/
