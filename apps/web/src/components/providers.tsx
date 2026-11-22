@@ -79,8 +79,8 @@ function PrivyGate({ children }: { children: React.ReactNode }) {
         },
         appearance: {
           theme: 'dark',
-          accentColor: '#5E7CFF',
-          landingHeader: 'Sign in to TradeTokenStocks',
+          accentColor: '#2BD98B',
+          landingHeader: 'Sign in to ORVYN',
         },
       }}>
       <QueryClientProvider client={queryClient}>
