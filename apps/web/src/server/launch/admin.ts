@@ -1,4 +1,5 @@
 import { database, databaseConfigured } from './db-core';
+import { readLaunchMarketProof } from './proof';
 
 export type AdminEvent = {
   id: string;
@@ -23,6 +24,7 @@ export type AdminOverview = {
   eventsToday: number;
   recentEvents: AdminEvent[];
   recentUsers: AdminUserRow[];
+  launch: { strategies: number; traders: number; follows: number; trades: number } | null;
 };
 
 function iso(value: string | Date): string {
@@ -86,11 +88,21 @@ export async function readAdminOverview(): Promise<AdminOverview | null> {
     const row = counts[0];
     if (!row) return null;
 
+    const launch = await readLaunchMarketProof();
+
     return {
       users: row.users,
       strategies: row.strategies,
       investors: row.investors,
       eventsToday: row.events_today,
+      launch: launch
+        ? {
+            strategies: launch.strategies,
+            traders: launch.traders,
+            follows: launch.follows,
+            trades: launch.trades,
+          }
+        : null,
       recentEvents: events.map((event) => ({
         id: String(event.id),
         kind: event.kind,

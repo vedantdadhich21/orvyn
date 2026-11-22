@@ -40,6 +40,12 @@ export function HomeScreen() {
           <span className="text-[11.5px] leading-relaxed text-ink-faint">
             No account. No money. Everything is simulated.
           </span>
+          <Link
+            href="/launch"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-stroke-raised px-3.5 py-2 text-[11.5px] font-semibold text-ink-secondary transition-colors hover:border-brand/40 hover:text-ink-primary">
+            Trade the testnet market
+            <ArrowRight className="size-3" aria-hidden />
+          </Link>
         </div>
       </header>
 

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { House, Plus, type LucideIcon } from 'lucide-react';
+import { House, Coins, Plus, type LucideIcon } from 'lucide-react';
 
 import { Chip } from '@/components/primitives';
 import { OrvynMark } from '@/components/brand/mark';
@@ -21,6 +21,7 @@ type Destination = {
 
 const DESTINATIONS: Destination[] = [
   { href: '/', label: 'Home', icon: House },
+  { href: '/launch', label: 'Market', icon: Coins },
   { href: '/create', label: 'Create', icon: Plus },
 ];
 

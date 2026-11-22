@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 import { isHex } from 'viem';
 
 import { databaseConfigured } from '@/server/launch/db';
+import { ingestLaunchTransaction } from '@/server/launch/ingest-launch';
 import { ingestTransaction } from '@/server/launch/ingest';
 
 export const dynamic = 'force-dynamic';
@@ -34,10 +35,34 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await ingestTransaction(txHash as `0x${string}`);
+    const [chapter, launch] = await Promise.allSettled([
+      ingestTransaction(txHash as `0x${string}`),
+      ingestLaunchTransaction(txHash as `0x${string}`),
+    ]);
+
+    const results = [chapter, launch]
+      .filter(
+        (item): item is PromiseFulfilledResult<Awaited<ReturnType<typeof ingestTransaction>>> =>
+          item.status === 'fulfilled',
+      )
+      .map((item) => item.value);
+
+    if (results.length === 0) {
+      return NextResponse.json(
+        { ok: false, error: 'The indexer could not read the transaction.' },
+        { status: 502 },
+      );
+    }
+
+    const written = results.reduce((sum, result) => sum + result.written, 0);
+    const ok = results.some((result) => result.ok);
     return NextResponse.json(
-      { ...result, error: result.ok ? null : (result.reason ?? 'The transaction could not be indexed.') },
-      { status: result.ok ? 200 : 400, headers: { 'Cache-Control': 'no-store' } },
+      {
+        ok,
+        written,
+        error: ok ? null : (results.find((result) => !result.ok)?.reason ?? 'The transaction could not be indexed.'),
+      },
+      { status: ok ? 200 : 400, headers: { 'Cache-Control': 'no-store' } },
     );
   } catch {
     return NextResponse.json(

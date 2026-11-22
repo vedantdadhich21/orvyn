@@ -51,3 +51,51 @@ export async function readLaunchProof(): Promise<LaunchProof | null> {
     return null;
   }
 }
+
+export type LaunchMarketProof = {
+  strategies: number;
+  traders: number;
+  follows: number;
+  trades: number;
+  tradesToday: number;
+  latest: string | null;
+};
+
+/** Counts for the launch market, from the launch schema only. */
+export async function readLaunchMarketProof(): Promise<LaunchMarketProof | null> {
+  if (!databaseConfigured()) return null;
+
+  try {
+    const sql = database();
+    const rows = (await sql`
+      select
+        (select count(*)::int from launch.strategies) as strategies,
+        (select count(distinct trader_address)::int from launch.trades) as traders,
+        (select count(*)::int from launch.follows) as follows,
+        (select count(*)::int from launch.trades) as trades,
+        (select count(*)::int from launch.trades where created_at >= date_trunc('day', now())) as trades_today,
+        (select max(published_at) from launch.strategies) as latest
+    `) as Array<{
+      strategies: number;
+      traders: number;
+      follows: number;
+      trades: number;
+      trades_today: number;
+      latest: string | Date | null;
+    }>;
+
+    const row = rows[0];
+    if (!row) return null;
+
+    return {
+      strategies: row.strategies,
+      traders: row.traders,
+      follows: row.follows,
+      trades: row.trades,
+      tradesToday: row.trades_today,
+      latest: row.latest ? new Date(row.latest).toISOString() : null,
+    };
+  } catch {
+    return null;
+  }
+}

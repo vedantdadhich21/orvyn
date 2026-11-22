@@ -88,6 +88,7 @@ export async function POST(request: Request) {
       eventsToday: 0,
       recentEvents: [],
       recentUsers: [],
+      launch: null,
     });
   }
 
@@ -107,6 +108,7 @@ export async function POST(request: Request) {
       eventsToday: 0,
       recentEvents: [],
       recentUsers: [],
+      launch: null,
     });
   } catch {
     return fail('The registry could not be read right now.', 502);

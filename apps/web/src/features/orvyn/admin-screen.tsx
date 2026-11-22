@@ -35,6 +35,7 @@ type AdminStats = {
   eventsToday: number;
   recentEvents: AdminEvent[];
   recentUsers: AdminUser[];
+  launch: { strategies: number; traders: number; follows: number; trades: number } | null;
 };
 
 function shortAddress(address: string): string {
@@ -247,6 +248,41 @@ export function AdminScreen() {
                 )}
               </Panel>
             </div>
+
+            {stats.launch ? (
+              <Panel className="p-5">
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <SectionLabel as="h2">Launch market</SectionLabel>
+                  <Link
+                    href="/launch/proof"
+                    className="inline-flex items-center gap-1.5 text-[10.5px] font-medium text-ink-tertiary transition-colors hover:text-ink-secondary">
+                    Proof
+                    <ExternalLink className="size-3" aria-hidden />
+                  </Link>
+                </div>
+                <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  <div>
+                    <p className="text-[9.5px] tracking-[0.1em] text-ink-faint uppercase">Strategies</p>
+                    <Num className="mt-1 block text-2xl font-semibold">{stats.launch.strategies}</Num>
+                  </div>
+                  <div>
+                    <p className="text-[9.5px] tracking-[0.1em] text-ink-faint uppercase">Traders</p>
+                    <Num className="mt-1 block text-2xl font-semibold">{stats.launch.traders}</Num>
+                  </div>
+                  <div>
+                    <p className="text-[9.5px] tracking-[0.1em] text-ink-faint uppercase">Follows</p>
+                    <Num className="mt-1 block text-2xl font-semibold">{stats.launch.follows}</Num>
+                  </div>
+                  <div>
+                    <p className="text-[9.5px] tracking-[0.1em] text-ink-faint uppercase">Trades</p>
+                    <Num className="mt-1 block text-2xl font-semibold">{stats.launch.trades}</Num>
+                  </div>
+                </div>
+                <p className="mt-3 text-[10.5px] text-ink-faint">
+                  Indexed from the exchange and Registry v2. The demo oracle is not a live feed.
+                </p>
+              </Panel>
+            ) : null}
 
             <Panel className="p-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
