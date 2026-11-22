@@ -22,7 +22,6 @@ import {
   REGISTRY_CHAIN_ID,
   explorerAddressUrl,
   explorerTxUrl,
-  isRegistryConfigured,
   strategyRegistryAddress,
 } from '@/lib/orvyn/registry';
 import { savePublished } from '@/lib/orvyn/published';
@@ -31,6 +30,7 @@ import { strategyFromDraft } from '@/lib/orvyn/strategy';
 import { totalWeight } from '@/lib/orvyn/storage';
 import { useDraft } from '@/lib/orvyn/use-draft';
 import { usePublished } from '@/lib/orvyn/use-published';
+import { launchConfig } from '@/lib/orvyn/launch';
 
 /**
  * Publish one strategy to the registry.
@@ -48,7 +48,7 @@ function shortAddress(address: string): string {
   return `${address.slice(0, 6)}…${address.slice(-4)}`;
 }
 
-export function PublishScreen() {
+export function PublishScreen({ mode = 'chapter' }: { mode?: 'chapter' | 'launch' }) {
   const { id } = useParams<{ id: string }>();
   const draft = useDraft(id);
   const published = usePublished(id);
@@ -77,9 +77,13 @@ export function PublishScreen() {
 
   const complete = draft ? totalWeight(draft.weights, draft.tickers) === 100 : false;
   const preview = draft && complete ? strategyFromDraft(draft) : null;
+  const registry = mode === 'launch' ? launchConfig.registryV2 : strategyRegistryAddress;
+  const configured = Boolean(registry);
+  const backHref = mode === 'launch' ? '/launch' : `/portfolio/${id}`;
+  const backLabel = mode === 'launch' ? 'Market' : 'Dashboard';
   const chainId = chain?.id ?? null;
   const blocker = publishBlocker({
-    configured: isRegistryConfigured,
+    configured,
     complete,
     hasWallet: Boolean(address),
     chainId,
@@ -114,14 +118,14 @@ export function PublishScreen() {
   };
 
   const publish = async () => {
-    if (!draft || !preview?.ok || !strategyRegistryAddress || !address || !publicClient) return;
+    if (!draft || !preview?.ok || !registry || !address || !publicClient) return;
 
     setError(null);
     setStage('wallet');
     try {
       const hash = await writeContract({
         abi: STRATEGY_REGISTRY_ABI,
-        address: strategyRegistryAddress,
+        address: registry,
         functionName: 'publish',
         args: [preview.name, preview.payload],
         chainId: REGISTRY_CHAIN_ID,
@@ -133,13 +137,13 @@ export function PublishScreen() {
         throw new Error('The transaction was included but it reverted.');
       }
 
-      const strategyId = publishedIdFromLogs(receipt.logs, strategyRegistryAddress);
+      const strategyId = publishedIdFromLogs(receipt.logs, registry);
       if (strategyId !== null) {
         savePublished({
           version: 1,
           draftId: id,
           chainId: REGISTRY_CHAIN_ID,
-          registry: strategyRegistryAddress,
+          registry,
           strategyId: strategyId.toString(),
           txHash: hash,
           name: preview.name,
@@ -181,10 +185,10 @@ export function PublishScreen() {
     <div className="space-y-8">
       <div>
         <Link
-          href={`/portfolio/${id}`}
+          href={backHref}
           className="inline-flex items-center gap-1.5 text-[11.5px] font-medium text-ink-tertiary transition-colors hover:text-ink-secondary">
           <ArrowLeft className="size-3.5" aria-hidden />
-          Dashboard
+          {backLabel}
         </Link>
 
         <div className="mt-5 flex flex-wrap items-center gap-2">
@@ -194,7 +198,7 @@ export function PublishScreen() {
         </div>
 
         <Display as="h1" className="mt-4 text-3xl sm:text-4xl">
-          Publish the strategy
+          {mode === 'launch' ? 'Publish to the launch registry' : 'Publish the strategy'}
         </Display>
         <p className="mt-2 max-w-[58ch] text-[13px] leading-relaxed text-ink-secondary">
           The name, the targets and the rules go to a public registry. Holdings, units, prices and
@@ -351,9 +355,9 @@ export function PublishScreen() {
               View the transaction
               <ExternalLink className="size-3.5" aria-hidden />
             </a>
-            {strategyRegistryAddress ? (
+            {registry ? (
               <a
-                href={explorerAddressUrl(strategyRegistryAddress)}
+                href={explorerAddressUrl(registry)}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center gap-1.5 rounded-lg border border-stroke-raised px-4 py-2 text-[12px] font-semibold text-ink-secondary transition-colors hover:border-brand/40 hover:text-ink-primary">

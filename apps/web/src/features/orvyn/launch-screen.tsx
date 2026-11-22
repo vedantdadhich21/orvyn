@@ -66,6 +66,7 @@ export function LaunchScreen({
   const { mutateAsync: write } = useWriteContract();
   const publicClient = usePublicClient({ chainId: launchConfig.chainId });
 
+  const [sort, setSort] = useState<'newest' | 'followed'>('newest');
   const [ticker, setTicker] = useState<string>(launchStocks[0]?.ticker ?? 'NVDA');
   const [amount, setAmount] = useState('100');
   const [busy, setBusy] = useState(false);
@@ -230,6 +231,14 @@ export function LaunchScreen({
   const lastClaimAt = Number((lastClaim.data as bigint | undefined) ?? BigInt(0));
   const cooldownLeft = lastClaimAt > 0 ? lastClaimAt + FAUCET_COOLDOWN_SECONDS - now : 0;
   const cooldown = cooldownLeft > 0;
+
+  const orderedStrategies = useMemo(
+    () =>
+      sort === 'followed'
+        ? [...strategies].sort((a, b) => b.followers - a.followers)
+        : strategies,
+    [sort, strategies],
+  );
 
   const orderedPrices = useMemo(
     () => launchStocks.map((stock) => prices.find((item) => item.ticker === stock.ticker) ?? {
@@ -455,7 +464,28 @@ export function LaunchScreen({
       <section aria-label="Published launch strategies">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <SectionLabel as="h2">Published strategies</SectionLabel>
-          <span className="text-[11px] text-ink-faint">{strategies.length} on registry v2</span>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setSort('newest')}
+                className={cn('rounded-pill px-2 py-0.5 text-[10px] font-semibold', sort === 'newest' ? 'bg-fill-active text-ink-primary' : 'text-ink-faint')}>
+                Newest
+              </button>
+              <button
+                type="button"
+                onClick={() => setSort('followed')}
+                className={cn('rounded-pill px-2 py-0.5 text-[10px] font-semibold', sort === 'followed' ? 'bg-fill-active text-ink-primary' : 'text-ink-faint')}>
+                Most followed
+              </button>
+            </div>
+            <Link
+              href="/create"
+              className="inline-flex items-center gap-1 text-[10.5px] font-medium text-ink-tertiary transition-colors hover:text-ink-secondary">
+              Publish one
+              <ArrowRight className="size-3" aria-hidden />
+            </Link>
+          </div>
         </div>
 
         {strategies.length === 0 ? (
@@ -467,7 +497,7 @@ export function LaunchScreen({
           </Panel>
         ) : (
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            {strategies.map((strategy) => (
+            {orderedStrategies.map((strategy) => (
               <Panel key={strategy.id} className="flex flex-col p-5">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
