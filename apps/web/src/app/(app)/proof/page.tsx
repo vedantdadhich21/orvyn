@@ -5,6 +5,7 @@ import { ArrowRight, ExternalLink } from 'lucide-react';
 import { Chip, Display, Num, Panel, SandboxNote, SectionLabel } from '@/components/primitives';
 import { explorerAddressUrl, strategyRegistryAddress } from '@/lib/orvyn/registry';
 import { readRegistryCount, readStrategies } from '@/lib/orvyn/registry-read';
+import { readLaunchProof } from '@/server/launch/proof';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,12 +21,14 @@ export default async function ProofPage() {
   let count = 0;
   let entries = [] as Awaited<ReturnType<typeof readStrategies>>;
   let failed = false;
+  let launchProof: Awaited<ReturnType<typeof readLaunchProof>> = null;
 
   if (strategyRegistryAddress) {
     try {
-      [count, entries] = await Promise.all([
+      [count, entries, launchProof] = await Promise.all([
         readRegistryCount({ address: strategyRegistryAddress }),
         readStrategies({ address: strategyRegistryAddress, limit: 50 }),
+        readLaunchProof(),
       ]);
     } catch {
       failed = true;
@@ -46,8 +49,8 @@ export default async function ProofPage() {
           What is actually onchain
         </Display>
         <p className="mt-2 max-w-[56ch] text-[13px] leading-relaxed text-ink-secondary">
-          These counts come from the registry contract, not from a local cache. Anyone can
-          read the same numbers from the address below.
+          The strategy counts come from the registry contract. The database counts are built
+          from the same onchain events, so anyone can check both.
         </p>
       </div>
 
@@ -105,6 +108,38 @@ export default async function ProofPage() {
             </Panel>
           </div>
 
+          {launchProof ? (
+            <div>
+              <div className="flex flex-wrap items-baseline justify-between gap-2">
+                <SectionLabel as="h2">From the launch database</SectionLabel>
+                <span className="text-[10.5px] text-ink-faint">Backfilled from the registry</span>
+              </div>
+              <div className="mt-3 grid gap-3 sm:grid-cols-3">
+                <Panel className="p-5">
+                  <SectionLabel as="h3">Wallets</SectionLabel>
+                  <Num className="mt-2 block text-3xl font-semibold">{launchProof.wallets}</Num>
+                  <p className="mt-1 text-[10.5px] text-ink-faint">Known publishing wallets</p>
+                </Panel>
+                <Panel className="p-5">
+                  <SectionLabel as="h3">Investors</SectionLabel>
+                  <Num className="mt-2 block text-3xl font-semibold">
+                    {launchProof.investors}
+                  </Num>
+                  <p className="mt-1 text-[10.5px] text-ink-faint">
+                    Arrives with the exchange
+                  </p>
+                </Panel>
+                <Panel className="p-5">
+                  <SectionLabel as="h3">Events today</SectionLabel>
+                  <Num className="mt-2 block text-3xl font-semibold">
+                    {launchProof.eventsToday}
+                  </Num>
+                  <p className="mt-1 text-[10.5px] text-ink-faint">Onchain actions indexed</p>
+                </Panel>
+              </div>
+            </div>
+          ) : null}
+
           <Panel className="p-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
@@ -143,8 +178,9 @@ export default async function ProofPage() {
           <Panel className="p-5">
             <SectionLabel as="h2">Not shown yet</SectionLabel>
             <p className="mt-2 max-w-[54ch] text-[12px] leading-relaxed text-ink-secondary">
-              Wallets, follows, investments and transactions arrive with the exchange and the
-              database. This page will grow as those ship; it will not invent them early.
+              Follows and investments arrive with the exchange. The wallet and event counts
+              above come from Postgres, indexed from the same registry events. Nothing here is
+              estimated.
             </p>
           </Panel>
 

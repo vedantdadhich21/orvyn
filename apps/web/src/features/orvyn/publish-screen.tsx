@@ -149,6 +149,14 @@ export function PublishScreen() {
         });
       }
 
+      // The indexer re-reads the receipt. A failed write must not hide a
+      // transaction that already confirmed.
+      void fetch('/api/tx', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ txHash: hash }),
+      }).catch(() => undefined);
+
       setResult({ hash, strategyId });
       setStage('done');
     } catch (cause) {
