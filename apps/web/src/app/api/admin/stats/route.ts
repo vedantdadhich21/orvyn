@@ -5,14 +5,13 @@ import { isAddress, isHex, verifyMessage } from 'viem';
 
 import { strategyRegistryAddress } from '@/lib/orvyn/registry';
 import { readRegistryCount, readStrategies } from '@/lib/orvyn/registry-read';
+import { readAdminOverview } from '@/server/launch/admin';
 
 /**
  * Admin is a signature gate, not a password. The browser signs a short lived
  * message with the connected wallet; the server verifies it against the wallet
- * list and then reads public registry counts. No user data is exposed here.
- *
- * This is deliberately small until Postgres and the exchange exist. The pack's
- * user list, timeline and sybil views belong in this route once those tables do.
+ * list and then reads the launch database. If the database is unavailable, the
+ * route falls back to registry counts and says so.
  */
 
 const WINDOW_MS = 5 * 60 * 1000;
@@ -68,12 +67,27 @@ export async function POST(request: Request) {
   }
   if (!valid) return fail('Signature does not match.', 401);
 
+  const overview = await readAdminOverview();
+  if (overview) {
+    return NextResponse.json({
+      configured: true,
+      registryOnly: false,
+      registry: strategyRegistryAddress ?? null,
+      ...overview,
+    });
+  }
+
   if (!strategyRegistryAddress) {
     return NextResponse.json({
       configured: false,
-      count: 0,
-      authors: 0,
-      latest: null,
+      registryOnly: false,
+      registry: null,
+      users: 0,
+      strategies: 0,
+      investors: 0,
+      eventsToday: 0,
+      recentEvents: [],
+      recentUsers: [],
     });
   }
 
@@ -85,9 +99,14 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       configured: true,
-      count,
-      authors: new Set(entries.map((entry) => entry.author.toLowerCase())).size,
-      latest: entries[0]?.publishedAt ?? null,
+      registryOnly: true,
+      registry: strategyRegistryAddress,
+      users: new Set(entries.map((entry) => entry.author.toLowerCase())).size,
+      strategies: count,
+      investors: 0,
+      eventsToday: 0,
+      recentEvents: [],
+      recentUsers: [],
     });
   } catch {
     return fail('The registry could not be read right now.', 502);
