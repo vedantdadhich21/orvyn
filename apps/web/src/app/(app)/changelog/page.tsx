@@ -11,6 +11,29 @@ export const metadata: Metadata = {
 
 const RELEASES = [
   {
+    version: 'v0.1.1',
+    title: 'Trust pages and launch scaffold',
+    href: 'https://github.com/vedantdadhich21/orvyn/releases/tag/v0.1.1',
+    groups: [
+      {
+        label: 'Public pages',
+        items: [
+          'A strategy page at /s/<id> with targets, limits, the exact line and a generated share card.',
+          'A proof page with live registry counts and the contract address.',
+          'How it works and this changelog, linked from the footer on every screen.',
+        ],
+      },
+      {
+        label: 'Launch scaffold',
+        items: [
+          'An admin page gated by a wallet signature, checked on the server with viem.',
+          'A paymaster proxy that forwards only the two sponsored call methods.',
+          'A Postgres schema and the API shape for users, strategies, follows, investments, trades and events.',
+        ],
+      },
+    ],
+  },
+  {
     version: 'v0.1.0',
     title: 'Chapter 1',
     href: 'https://github.com/vedantdadhich21/orvyn/releases/tag/v0.1.0',
