@@ -1,0 +1,70 @@
+{
+  "chainId": 84532,
+  "chain": "Base Sepolia",
+  "explorer": "https://sepolia.basescan.org",
+  "deployer": "0x870c521ab4F443e18559AD5D1a431A966BA51dde",
+  "deployedAt": "2026-11-22T17:41:24.899Z",
+  "contracts": {
+    "testUSD": "0xdd5f317af7f7b0dc741c1dbada77ce9dde072705",
+    "priceOracle": "0xbf0746f83236a87ae099bf5d02258441bee6fd3f",
+    "exchange": "0x0fbae764dfa5764e0d4054da690b71d2ca91af30",
+    "registryV2": "0xdfa9533ec01b357e396a477b1413031c18b00137"
+  },
+  "stocks": {
+    "NVDA": {
+      "address": "0x6c73710312e95124ef86bb6323d40a89ed8b3ed8",
+      "name": "NVIDIA",
+      "priceUsd": 140
+    },
+    "MSFT": {
+      "address": "0xd28165f322ce8cd716e881793fb8b0cfe7a7212c",
+      "name": "Microsoft",
+      "priceUsd": 420
+    },
+    "GOOGL": {
+      "address": "0xc7089ca8fa30e7fc11e386dcb611a5fac0be025d",
+      "name": "Alphabet",
+      "priceUsd": 170
+    },
+    "AMZN": {
+      "address": "0xdb39793d27462d23d66503df3ae056b17c9001c3",
+      "name": "Amazon",
+      "priceUsd": 190
+    },
+    "AAPL": {
+      "address": "0x32c4b0a13fe13db7fc4a51588800f0f532cfdad3",
+      "name": "Apple",
+      "priceUsd": 230
+    },
+    "TSLA": {
+      "address": "0x5df9b5145264dde78ccee0c80c5687bce29b87da",
+      "name": "Tesla",
+      "priceUsd": 250
+    },
+    "META": {
+      "address": "0x9b60a8639ef910eef539d975c169dee550a44d99",
+      "name": "Meta",
+      "priceUsd": 600
+    }
+  },
+  "seedStrategy": {
+    "id": "0",
+    "payload": "orvyn/1|name=Future of AI|limits=ceiling:40,cash:0,band:5|weights=NVDA:40,MSFT:20,GOOGL:20,CASH:20|book=10000",
+    "txHash": "0x9322d6207b00460b5b9a933606685c437303a246922b4c45cb84adb6c18a4cdc"
+  },
+  "transactions": {
+    "testUSD": "0xfc5d3f34c4920031c87417a9bcf723db8fd40565c3e8158ff8488bbaf3cd2d20",
+    "priceOracle": "0x35baaf210a4cb376f71c2f8da2c419da120e7a511dc5823b7b01bb04ded08b80",
+    "exchange": "0xb97e4656507bd6990980ea936d84f37027cf2f77eb376f823fedc4a3191af5ef",
+    "stock:NVDA": "0xf1d7c60d63f710dc61f30378c6ef70b77995c73525261097e1827d46b2244135",
+    "stock:MSFT": "0xad048f295885efd960188142e089a8d17656d06bdc20ab8eb1ec874c6abc13b8",
+    "stock:GOOGL": "0x442a404841fc7ded13581744098b1ffb9080e573476e50311516e08f895b523b",
+    "stock:AMZN": "0x6d021747f8ecbebe3ca5789e240e79912c05904508a6902c5bb23ff6f41186b0",
+    "stock:AAPL": "0x6fc8ae51cd357fd8ef705aa0d6e4897e732e086bc5b34edff833696d6a347eca",
+    "stock:TSLA": "0x8d8dcb8421ce7ecac3c1a08030fceedff3003170315ece3973023e111411fe33",
+    "stock:META": "0x7740a46fa5031e6e27fc31f4eb6adb4ec8c34951b44d20ee9faa388fe17b0281",
+    "registryV2": "0x9624c5dfd02294e6ae92d82af53746af99bc065ceb9a9565504abfa90710a192",
+    "setPrices": "0x714215b05600a8c1b38c4b9f105ca7b320a817257381bc7d9469459b950b2658",
+    "seedStrategy": "0x9322d6207b00460b5b9a933606685c437303a246922b4c45cb84adb6c18a4cdc"
+  }
+}

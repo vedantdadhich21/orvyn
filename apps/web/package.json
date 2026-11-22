@@ -11,7 +11,10 @@
     "tokens": "bun run scripts/generate-tokens-css.ts",
     "tokens:check": "bun run scripts/generate-tokens-css.ts --check",
     "contracts:build": "bun run scripts/compile-registry.ts",
-    "contracts:deploy": "bun run scripts/deploy-registry.ts"
+    "contracts:deploy": "bun run scripts/deploy-registry.ts",
+    "launch:artifacts": "bun run scripts/compile-launch.ts",
+    "launch:deploy": "bun run scripts/deploy-launch.ts",
+    "launch:basket": "bun run scripts/buy-basket.ts"
   },
   "dependencies": {
     "@neon/config": "^1.14.6",
@@ -37,6 +40,7 @@
     "wagmi": "^3.7.7"
   },
   "devDependencies": {
+    "@openzeppelin/contracts": "^5.6.1",
     "@tailwindcss/postcss": "^4",
     "@tradetoken/typescript-config": "workspace:*",
     "@types/node": "^20",
