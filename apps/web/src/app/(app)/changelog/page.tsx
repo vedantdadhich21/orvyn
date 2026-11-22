@@ -11,6 +11,27 @@ export const metadata: Metadata = {
 
 const RELEASES = [
   {
+    version: 'v0.1.2',
+    title: 'Registry live on Base Sepolia',
+    href: 'https://github.com/vedantdadhich21/orvyn/releases/tag/v0.1.2',
+    groups: [
+      {
+        label: 'Deployed',
+        items: [
+          'StrategyRegistry at 0xa434adf3a61c52c734bf39e7ab30086e32737293.',
+          'The first public strategy, Future of AI, published to the registry.',
+        ],
+      },
+      {
+        label: 'App',
+        items: [
+          'The gallery, strategy pages, share card and proof page read the live registry.',
+          'Publishing from the UI uses a Privy sign in and a funded testnet wallet.',
+        ],
+      },
+    ],
+  },
+  {
     version: 'v0.1.1',
     title: 'Trust pages and launch scaffold',
     href: 'https://github.com/vedantdadhich21/orvyn/releases/tag/v0.1.1',

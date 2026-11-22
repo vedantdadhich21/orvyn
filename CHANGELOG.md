@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.1.2 — Registry live on Base Sepolia
+
+### Deployed
+
+- `StrategyRegistry` at
+  [`0xa434adf3a61c52c734bf39e7ab30086e32737293`](https://sepolia.basescan.org/address/0xa434adf3a61c52c734bf39e7ab30086e32737293),
+  deployed in
+  [`0x81ef9068...`](https://sepolia.basescan.org/tx/0x81ef90682da8779611077543badf097667ed3329ed039bb00a29268757dcce6c).
+- The first public strategy, `Future of AI`, published in
+  [`0x454a8c98...`](https://sepolia.basescan.org/tx/0x454a8c98deaa43bdc395497fa8a0691760be24ec86157426d0d948c890d14d0f).
+
+### App
+
+- The gallery, `/s/<id>`, its share card and `/proof` read the live registry when
+  `NEXT_PUBLIC_STRATEGY_REGISTRY` points at the deployment.
+- Publishing from the UI needs a funded wallet and Privy sign in.
+
 ## v0.1.1 — Trust pages and launch scaffold
 
 ### Added

@@ -1,0 +1,12 @@
+{
+  "chainId": 84532,
+  "chain": "Base Sepolia",
+  "explorer": "https://sepolia.basescan.org",
+  "address": "0xa434adf3a61c52c734bf39e7ab30086e32737293",
+  "transactionHash": "0x81ef90682da8779611077543badf097667ed3329ed039bb00a29268757dcce6c",
+  "blockNumber": "62213542",
+  "deployer": "0x870c521ab4F443e18559AD5D1a431A966BA51dde",
+  "compiler": "0.8.24",
+  "optimizerRuns": 200,
+  "deployedAt": "2026-11-22T16:23:03.803Z"
+}

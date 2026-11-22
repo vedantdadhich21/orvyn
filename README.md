@@ -58,6 +58,10 @@ bun test          # domain tests
 `publish(name, payload)` stores a readable line: the strategy name, its limits and its
 target weights. Holdings, units, prices and addresses never go onchain.
 
+The current Base Sepolia deployment is
+[`0xa434adf3a61c52c734bf39e7ab30086e32737293`](https://sepolia.basescan.org/address/0xa434adf3a61c52c734bf39e7ab30086e32737293).
+Set `NEXT_PUBLIC_STRATEGY_REGISTRY` to that address to turn publishing and the gallery on.
+
 Deploy it with a funded test wallet:
 
 ```bash
@@ -74,6 +78,9 @@ why it cannot sign.
 The compiled ABI and bytecode are committed in `src/lib/orvyn/strategy-registry.ts`.
 Regenerate them after a contract change with `bun run contracts:build`. The contract has no
 owner, no upgrade path and no function that moves funds.
+
+To verify the source on BaseScan, open the contract, choose **Verify and Publish**, select
+Solidity single file, compiler `0.8.24`, optimizer `200` and EVM version `cancun`.
 
 The gallery at the bottom of the home page reads `count()` and `get()` through
 `/api/registry`, parses each published line back into limits and targets, and can copy one
