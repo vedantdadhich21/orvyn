@@ -6,6 +6,7 @@ import { House, Plus, type LucideIcon } from 'lucide-react';
 
 import { Chip } from '@/components/primitives';
 import { OrvynMark } from '@/components/brand/mark';
+import { AuthLink } from '@/components/shell/auth-link';
 import { cn } from '@/lib/utils';
 
 /**
@@ -59,6 +60,10 @@ export function NavRail({ onNavigate }: { onNavigate?: () => void }) {
           </Link>
         );
       })}
+
+      <div className="mt-2 border-t border-stroke-hairline pt-2">
+        <AuthLink {...(onNavigate ? { onNavigate } : {})} />
+      </div>
 
       <div className="mt-auto space-y-2 pt-4">
         <Chip tone="neutral" className="w-full justify-center">

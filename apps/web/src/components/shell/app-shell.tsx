@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Menu } from 'lucide-react';
 
 import { NavRail } from '@/components/shell/nav-rail';
+import { AuthLink } from '@/components/shell/auth-link';
 import { SiteFooter } from '@/components/shell/site-footer';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -69,9 +70,12 @@ export function AppShell({
             </SheetContent>
           </Sheet>
           <span className="text-[13px] font-semibold tracking-[0.18em]">ORVYN</span>
-          <span className="ml-auto rounded-pill border border-stroke-raised bg-fill-muted px-2 py-0.5 text-[10.5px] font-semibold text-ink-tertiary">
-            Simulated
-          </span>
+          <div className="ml-auto flex items-center gap-2">
+            <AuthLink variant="header" />
+            <span className="rounded-pill border border-stroke-raised bg-fill-muted px-2 py-0.5 text-[10.5px] font-semibold text-ink-tertiary">
+              Simulated
+            </span>
+          </div>
         </header>
 
         <div className="flex min-w-0 flex-1">
