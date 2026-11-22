@@ -1,0 +1,40 @@
+name: Feature request
+description: Propose a change to the simulator, the rules or the registry.
+title: "[feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the problem before the solution. Chapter 1 is simulated and testnet
+        only, so features that need custody, real orders or real money are out of scope.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you trying to solve?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would you build?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What did you consider instead?
+
+  - type: dropdown
+    id: contribution
+    attributes:
+      label: Would you open a pull request?
+      options:
+        - Yes, with tests
+        - Yes, but I would need guidance
+        - No, just the idea
+    validations:
+      required: true

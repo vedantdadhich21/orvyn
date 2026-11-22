@@ -1,0 +1,73 @@
+name: Bug report
+description: Something in the simulated builder is wrong.
+title: "[bug] "
+labels: ["bug", "needs-repro"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for testing. Do not paste a private key, seed phrase, `.env` file or
+        another person's data. Security issues belong in the Security tab, not here.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where did it happen?
+      options:
+        - Create and pick stocks
+        - Allocation
+        - Rules
+        - Dashboard and drift
+        - Rebalance simulation
+        - Publish and registry
+        - Published strategies
+        - Navigation and layout
+        - Something else
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open ...
+        2. Click ...
+        3. See ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened instead?
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Browser and operating system
+      placeholder: Arc 1.x on macOS 15
+    validations:
+      required: true
+
+  - type: textarea
+    id: console
+    attributes:
+      label: Console output
+      description: Paste the first error, not the whole log.
+      render: shell
+
+  - type: textarea
+    id: media
+    attributes:
+      label: Screenshot or recording
+      description: Paste an image or a link here if the problem is visual.

@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security issue privately
+    url: https://github.com/vedantdadhich21/orvyn/security/advisories/new
+    about: Do not open a public issue for a vulnerability. If the form is unavailable, ask for a private channel on X without the details.
+  - name: Bounty and contribution guide
+    url: https://github.com/vedantdadhich21/orvyn/blob/main/BOUNTY.md
+    about: What counts, what is out of scope, and what an accepted report earns.
+  - name: ORVYN on X
+    url: https://x.com/orvyn_io
+    about: Build notes, screenshots and release posts.
