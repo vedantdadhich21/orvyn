@@ -57,7 +57,7 @@ export function Balance({
   return (
     <Display className={cn('text-5xl sm:text-6xl', className)}>
       {whole}
-      <span className="opacity-30">{cents}</span>
+      <span className="opacity-50">{cents}</span>
     </Display>
   );
 }

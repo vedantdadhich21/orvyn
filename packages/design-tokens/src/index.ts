@@ -59,10 +59,10 @@ export const palette = {
  */
 export const ink = {
   primary: palette.text,
-  secondary: 'rgba(242,243,245,0.62)',
-  tertiary: 'rgba(242,243,245,0.48)',
-  quaternary: 'rgba(242,243,245,0.42)',
-  faint: 'rgba(242,243,245,0.34)',
+  secondary: 'rgba(242,243,245,0.72)',
+  tertiary: 'rgba(242,243,245,0.62)',
+  quaternary: 'rgba(242,243,245,0.56)',
+  faint: 'rgba(242,243,245,0.50)',
 } as const;
 
 /** Hairline borders and translucent fills, all white-on-dark. */
