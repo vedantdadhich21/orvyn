@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     : entry.payload;
 
   return {
-    title: `${entry.name} — published strategy`,
+    title: `${entry.name} · published strategy`,
     description: `${entry.name}${top ? ` · ${top}` : ''}. Published on the ORVYN testnet registry.`,
     openGraph: {
       title: entry.name,
