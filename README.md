@@ -13,14 +13,15 @@ drifts off plan.
 
 ## Status
 
-Chapter 1, in progress. The home page, the stock picker, locally saved drafts, allocation
-sliders, the market data adapter and the portfolio engine are shipped. A portfolio now
-carries rules, the dashboard shows what the book is worth and how far each line has
-drifted, and the engine prices the trades a rebalance would need. A sentence can fill the
-limits, through the same check a model's answer would face. The simulate screen shows the
-trade list, the book on either side of it, and an approval that survives a refresh. A
-publish screen writes the strategy to a testnet registry and links to the transaction;
-the registry deployment address is the last external step.
+Chapter 1 is complete. The builder covers the whole path: pick the stocks, set the
+allocation, write the limits, read the drift dashboard, price the rebalance, approve it, and
+publish the strategy to a testnet registry. A sentence can fill the limits through the same
+validation a model's answer would face. The home gallery reads published strategies back
+from the chain and copies one into a local draft.
+
+Everything is simulated. Drafts and approvals live in the browser; no account, brokerage,
+custody or real money is involved. The registry contract is included and ownerless; set
+`NEXT_PUBLIC_STRATEGY_REGISTRY` to a deployment to turn publishing on.
 
 ## Stack
 
@@ -73,6 +74,11 @@ why it cannot sign.
 The compiled ABI and bytecode are committed in `src/lib/orvyn/strategy-registry.ts`.
 Regenerate them after a contract change with `bun run contracts:build`. The contract has no
 owner, no upgrade path and no function that moves funds.
+
+The gallery at the bottom of the home page reads `count()` and `get()` through
+`/api/registry`, parses each published line back into limits and targets, and can copy one
+into an editable local draft. Copying needs no wallet. `BASE_SEPOLIA_RPC_URL` selects the
+read endpoint and defaults to the public Base Sepolia RPC.
 
 ## Contributing and bounties
 
