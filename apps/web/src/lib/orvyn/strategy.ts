@@ -14,7 +14,7 @@
 import { RULE_LIMITS, type Rules } from './rules';
 import { STARTING_NOTIONAL_USD } from './sim';
 import { STOCKS } from './stocks';
-import type { PortfolioDraft } from './storage';
+import { createDraft, type PortfolioDraft } from './storage';
 
 const KNOWN = new Set(STOCKS.map((stock) => stock.ticker));
 
@@ -113,4 +113,89 @@ export function strategyFromDraft(draft: PortfolioDraft): StrategyPayload {
     weights: draft.weights,
     rules: draft.rules,
   });
+}
+
+export type ParsedStrategy = {
+  name: string;
+  rules: Rules;
+  weights: Record<string, number>;
+  bookUsd: number;
+};
+
+const WHOLE = /^\d+$/;
+
+/**
+ * Read the line that was written onchain.
+ *
+ * This is deliberately strict: a payload either has the version, the three
+ * limits, a set of known whole weights that add to 100 and a positive book, or
+ * it is not a strategy this build understands. Reading never clamps or repairs
+ * a number, because a copied strategy must be the one its author published.
+ */
+export function parseStrategyPayload(payload: string): ParsedStrategy | null {
+  if (typeof payload !== 'string' || payload.length === 0) return null;
+
+  const parts = payload.split('|');
+  if (parts.length !== 5) return null;
+  const [version, namePart, limitsPart, weightsPart, bookPart] = parts;
+  if (version !== STRATEGY_VERSION) return null;
+
+  if (!namePart?.startsWith('name=')) return null;
+  const name = namePart.slice('name='.length);
+  if (!name || new TextEncoder().encode(name).length > MAX_PUBLISHED_NAME_BYTES) return null;
+
+  if (!limitsPart?.startsWith('limits=')) return null;
+  const limits = new Map<string, number>();
+  for (const pair of limitsPart.slice('limits='.length).split(',')) {
+    const [key, raw, extra] = pair.split(':');
+    if (!key || raw === undefined || extra !== undefined || limits.has(key)) return null;
+    if (!WHOLE.test(raw)) return null;
+    limits.set(key, Number(raw));
+  }
+  if (limits.size !== 3) return null;
+
+  const ceiling = limits.get('ceiling');
+  const cash = limits.get('cash');
+  const band = limits.get('band');
+  if (ceiling === undefined || cash === undefined || band === undefined) return null;
+
+  const rules: Rules = { ceilingPct: ceiling, cashFloorPct: cash, driftBandPct: band };
+  for (const key of ['ceilingPct', 'cashFloorPct', 'driftBandPct'] as const) {
+    const { min, max } = RULE_LIMITS[key];
+    if (rules[key] < min || rules[key] > max) return null;
+  }
+
+  if (!weightsPart?.startsWith('weights=')) return null;
+  const weights: Record<string, number> = {};
+  let total = 0;
+  for (const pair of weightsPart.slice('weights='.length).split(',')) {
+    const [ticker, raw, extra] = pair.split(':');
+    if (!ticker || raw === undefined || extra !== undefined) return null;
+    if (!KNOWN.has(ticker) || weights[ticker] !== undefined) return null;
+    if (!WHOLE.test(raw)) return null;
+    const value = Number(raw);
+    if (value > 100) return null;
+    weights[ticker] = value;
+    total += value;
+  }
+  if (total !== 100 || Object.keys(weights).length === 0) return null;
+
+  if (!bookPart?.startsWith('book=')) return null;
+  const rawBook = bookPart.slice('book='.length);
+  if (!WHOLE.test(rawBook)) return null;
+  const bookUsd = Number(rawBook);
+  if (!Number.isSafeInteger(bookUsd) || bookUsd <= 0) return null;
+
+  return { name, rules, weights, bookUsd };
+}
+
+/** A local, editable copy of somebody else's published strategy. */
+export function draftFromStrategy(strategy: ParsedStrategy): PortfolioDraft {
+  const draft = createDraft(strategy.name, Object.keys(strategy.weights));
+  return {
+    ...draft,
+    weights: { ...strategy.weights },
+    rules: { ...strategy.rules },
+    updatedAt: new Date().toISOString(),
+  };
 }

@@ -13,6 +13,8 @@
 import { isAddress, type Address } from 'viem';
 import { baseSepolia } from 'viem/chains';
 
+import type { ParsedStrategy } from './strategy';
+
 export const REGISTRY_CHAIN = baseSepolia;
 export const REGISTRY_CHAIN_ID = baseSepolia.id;
 
@@ -39,3 +41,15 @@ export function explorerAddressUrl(address: string): string {
 export function explorerTxUrl(hash: string): string {
   return `${EXPLORER_URL}/tx/${hash}`;
 }
+
+/** One strategy as the registry returns it, already shaped for the gallery. */
+export type RegistryEntry = {
+  id: string;
+  author: string;
+  name: string;
+  payload: string;
+  /** ISO timestamp derived from the contract's uint64 seconds. */
+  publishedAt: string;
+  /** Null when the line is from a format this build does not understand. */
+  parsed: ParsedStrategy | null;
+};
