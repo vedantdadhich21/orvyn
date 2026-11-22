@@ -60,7 +60,8 @@ target weights. Holdings, units, prices and addresses never go onchain.
 
 The current Base Sepolia deployment is
 [`0xa434adf3a61c52c734bf39e7ab30086e32737293`](https://sepolia.basescan.org/address/0xa434adf3a61c52c734bf39e7ab30086e32737293).
-Set `NEXT_PUBLIC_STRATEGY_REGISTRY` to that address to turn publishing and the gallery on.
+The app reads this deployment by default; set `NEXT_PUBLIC_STRATEGY_REGISTRY` only to
+override it after a new deployment.
 
 Deploy it with a funded test wallet:
 

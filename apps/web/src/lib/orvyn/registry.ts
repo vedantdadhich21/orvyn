@@ -28,8 +28,16 @@ export function parseRegistryAddress(value: string | undefined | null): Address 
   return isAddress(trimmed) ? trimmed : null;
 }
 
+const CURRENT_BASE_SEPOLIA_REGISTRY = '0xa434adf3a61c52c734bf39e7ab30086e32737293';
+
+/**
+ * The public launch deployment is the default so a fresh clone, a preview and
+ * the live site all read the same registry without configuration. Set
+ * NEXT_PUBLIC_STRATEGY_REGISTRY to override it after a new deployment; the
+ * value is a public address, not a secret.
+ */
 export const strategyRegistryAddress = parseRegistryAddress(
-  process.env.NEXT_PUBLIC_STRATEGY_REGISTRY,
+  process.env.NEXT_PUBLIC_STRATEGY_REGISTRY || CURRENT_BASE_SEPOLIA_REGISTRY,
 );
 
 export const isRegistryConfigured = strategyRegistryAddress !== null;
