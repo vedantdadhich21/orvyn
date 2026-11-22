@@ -14,6 +14,9 @@
     "contracts:deploy": "bun run scripts/deploy-registry.ts"
   },
   "dependencies": {
+    "@neon/config": "^1.14.6",
+    "@neon/env": "^2.1.9",
+    "@neondatabase/serverless": "^1.2.1",
     "@privy-io/react-auth": "^3.40.0",
     "@privy-io/wagmi": "^4.0.17",
     "@tanstack/react-query": "^5.102.8",
