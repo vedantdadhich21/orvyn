@@ -80,6 +80,16 @@ The gallery at the bottom of the home page reads `count()` and `get()` through
 into an editable local draft. Copying needs no wallet. `BASE_SEPOLIA_RPC_URL` selects the
 read endpoint and defaults to the public Base Sepolia RPC.
 
+### Trust pages
+
+- `/s/<id>` renders one published strategy with its targets, limits and exact line, plus a
+  generated share card for X.
+- `/proof` reads live registry counts from the contract and links to the address.
+- `/how-it-works` explains the four steps and what the product deliberately does not do.
+- `/changelog` lists what shipped in each release.
+- `/admin` is a wallet signature gate. Set `ADMIN_WALLETS` to a comma separated list; an
+  empty list disables it.
+
 ## Contributing and bounties
 
 Bugs, security reports and pull requests are welcome. Accepted reports and merged changes

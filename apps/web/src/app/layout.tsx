@@ -28,8 +28,28 @@ const jetbrainsMono = JetBrains_Mono({
 const description =
   'Build a stock portfolio, write the rules it follows, and see exactly when it drifts. Simulated portfolios; strategies published onchain.';
 
+/**
+ * Share images need an absolute origin. On Vercel the stable production domain
+ * is available even when NEXT_PUBLIC_APP_URL is unset; localhost is the last
+ * resort so a local build still renders.
+ */
+function siteUrl(): URL {
+  const raw =
+    process.env.NEXT_PUBLIC_APP_URL ||
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : 'http://localhost:3000');
+  try {
+    return new URL(raw.includes('://') ? raw : `https://${raw}`);
+  } catch {
+    return new URL('http://localhost:3000');
+  }
+}
+
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'),
+  metadataBase: siteUrl(),
   title: {
     default: 'ORVYN — Portfolios, programmed',
     template: '%s · ORVYN',

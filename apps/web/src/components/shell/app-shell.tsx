@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Menu } from 'lucide-react';
 
 import { NavRail } from '@/components/shell/nav-rail';
+import { SiteFooter } from '@/components/shell/site-footer';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
@@ -77,6 +78,7 @@ export function AppShell({
           <main className="relative min-w-0 flex-1">
             <div className="mx-auto w-full max-w-[860px] px-5 py-8 sm:px-8 lg:py-12">
               {children}
+              <SiteFooter />
             </div>
           </main>
 

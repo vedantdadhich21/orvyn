@@ -2,8 +2,9 @@
  * Read published strategies from Base Sepolia.
  *
  * This runs on the server only. The public registry address and a read RPC are
- * enough; no key, no signer and no write path live here. The gallery gets one
- * shaped list and never talks to an RPC directly.
+ * enough; no key, no signer and no write path live here. The gallery, the
+ * public strategy page and the proof page all get one shaped record and never
+ * talk to an RPC directly.
  */
 import { createPublicClient, http, type Address } from 'viem';
 import { baseSepolia } from 'viem/chains';
@@ -16,23 +17,60 @@ const DEFAULT_RPC = 'https://sepolia.base.org';
 const DEFAULT_LIMIT = 24;
 const MAX_LIMIT = 50;
 
+type RegistryRecord = {
+  author: Address;
+  name: string;
+  payload: string;
+  publishedAt: bigint;
+};
+
 export type ReadStrategiesOptions = {
   address: Address;
   rpcUrl?: string;
   limit?: number;
 };
 
+function registryClient(rpcUrl?: string) {
+  return createPublicClient({
+    chain: baseSepolia,
+    transport: http(rpcUrl ?? process.env.BASE_SEPOLIA_RPC_URL ?? DEFAULT_RPC, {
+      timeout: 8_000,
+    }),
+  });
+}
+
+function toEntry(id: bigint, record: RegistryRecord): RegistryEntry {
+  return {
+    id: id.toString(),
+    author: record.author,
+    name: record.name,
+    payload: record.payload,
+    publishedAt: new Date(Number(record.publishedAt) * 1000).toISOString(),
+    parsed: parseStrategyPayload(record.payload),
+  };
+}
+
+/** How many strategies exist, without reading all of them. */
+export async function readRegistryCount(options: {
+  address: Address;
+  rpcUrl?: string;
+}): Promise<number> {
+  const client = registryClient(options.rpcUrl);
+  const count = await client.readContract({
+    address: options.address,
+    abi: STRATEGY_REGISTRY_ABI,
+    functionName: 'count',
+  });
+  const total = Number(count);
+  return Number.isSafeInteger(total) && total > 0 ? total : 0;
+}
+
 /**
  * Newest first. A fixed read timeout keeps a dead RPC from turning the home
  * page into a hanging request; one malformed record is skipped, not fatal.
  */
 export async function readStrategies(options: ReadStrategiesOptions): Promise<RegistryEntry[]> {
-  const client = createPublicClient({
-    chain: baseSepolia,
-    transport: http(options.rpcUrl ?? process.env.BASE_SEPOLIA_RPC_URL ?? DEFAULT_RPC, {
-      timeout: 8_000,
-    }),
-  });
+  const client = registryClient(options.rpcUrl);
 
   const count = await client.readContract({
     address: options.address,
@@ -56,15 +94,7 @@ export async function readStrategies(options: ReadStrategiesOptions): Promise<Re
           functionName: 'get',
           args: [id],
         });
-
-        return {
-          id: id.toString(),
-          author: record.author,
-          name: record.name,
-          payload: record.payload,
-          publishedAt: new Date(Number(record.publishedAt) * 1000).toISOString(),
-          parsed: parseStrategyPayload(record.payload),
-        };
+        return toEntry(id, record);
       } catch {
         return null;
       }
@@ -72,4 +102,24 @@ export async function readStrategies(options: ReadStrategiesOptions): Promise<Re
   );
 
   return records.filter((record): record is RegistryEntry => record !== null).reverse();
+}
+
+/** One strategy by id. Null for an unknown id or an unreadable registry. */
+export async function readStrategy(options: {
+  address: Address;
+  id: bigint;
+  rpcUrl?: string;
+}): Promise<RegistryEntry | null> {
+  const client = registryClient(options.rpcUrl);
+  try {
+    const record = await client.readContract({
+      address: options.address,
+      abi: STRATEGY_REGISTRY_ABI,
+      functionName: 'get',
+      args: [options.id],
+    });
+    return toEntry(options.id, record);
+  } catch {
+    return null;
+  }
 }

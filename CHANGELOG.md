@@ -1,5 +1,25 @@
 # Changelog
 
+## v0.1.1 — Trust pages and launch scaffold
+
+### Added
+
+- Public strategy pages at `/s/<id>` with targets, limits, the exact published line and a
+  generated share card for X.
+- `/proof`: live registry counts, the contract address and an honest list of what is not
+  shown yet.
+- `/how-it-works` and `/changelog`, linked from a footer on every screen.
+- A wallet signature gate at `/admin`, checked on the server with viem against
+  `ADMIN_WALLETS`.
+- A Postgres schema and the launch API shape for users, strategies, follows, investments,
+  trades and events.
+
+### Notes
+
+- Publishing stays off until `NEXT_PUBLIC_STRATEGY_REGISTRY` points at a deployment.
+- The onchain MVP still needs the Testnet MVP contracts, a CDP Paymaster, Postgres and a
+  funded deployer. The schema and admin gate are ready for them.
+
 ## v0.1.0 — Chapter 1
 
 First working release. Simulated and testnet only: no custody, no brokerage and no real
