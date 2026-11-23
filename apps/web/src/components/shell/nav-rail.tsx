@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { House, Coins, Plus, type LucideIcon } from 'lucide-react';
+import { Briefcase, House, Coins, Plus, type LucideIcon } from 'lucide-react';
 
 import { Chip } from '@/components/primitives';
 import { OrvynMark } from '@/components/brand/mark';
@@ -10,8 +10,9 @@ import { AuthLink } from '@/components/shell/auth-link';
 import { cn } from '@/lib/utils';
 
 /**
- * Two destinations, because Chapter 1 has two. The rest of the journey lives
- * inside a portfolio rather than in the rail.
+ * The primary destinations. Chapter 1 adds Create; the launch adds Market and
+ * Portfolio. Secondary pages such as proof and the changelog live inside them
+ * and in the footer.
  */
 type Destination = {
   href: string;
@@ -22,11 +23,27 @@ type Destination = {
 const DESTINATIONS: Destination[] = [
   { href: '/', label: 'Home', icon: House },
   { href: '/launch', label: 'Market', icon: Coins },
+  { href: '/launch/portfolio', label: 'Portfolio', icon: Briefcase },
   { href: '/create', label: 'Create', icon: Plus },
 ];
 
 function isActive(pathname: string, href: string) {
-  return href === '/' ? pathname === '/' : pathname.startsWith(href);
+  if (href === '/') return pathname === '/';
+  if (href === '/launch') {
+    return (
+      pathname === '/launch' ||
+      pathname.startsWith('/launch/s/') ||
+      pathname.startsWith('/launch/publish') ||
+      pathname === '/launch/proof'
+    );
+  }
+  if (href === '/launch/portfolio') return pathname === '/launch/portfolio';
+  if (href === '/create') {
+    return ['/create', '/allocate', '/rules', '/portfolio', '/simulate', '/publish'].some(
+      (path) => pathname === path || pathname.startsWith(`${path}/`),
+    );
+  }
+  return pathname === href || pathname.startsWith(`${href}/`);
 }
 
 export function NavRail({ onNavigate }: { onNavigate?: () => void }) {
