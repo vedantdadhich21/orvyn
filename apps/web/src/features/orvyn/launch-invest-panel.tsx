@@ -53,6 +53,9 @@ export function LaunchInvestPanel({ strategy }: { strategy: LaunchStrategy }) {
   const strategyId = BigInt(strategy.id);
   const wrongChain = Boolean(chain && chain.id !== launchConfig.chainId);
   const enabled = Boolean(address) && !wrongChain && Boolean(strategy.parsed);
+  const isAuthor = address
+    ? address.toLowerCase() === strategy.author.toLowerCase()
+    : false;
 
   const usdc = useReadContract({
     address: launchConfig.testUSD,
@@ -105,7 +108,7 @@ export function LaunchInvestPanel({ strategy }: { strategy: LaunchStrategy }) {
   };
 
   const toggleFollow = async () => {
-    if (!address || !enabled) return;
+    if (!address || !enabled || isAuthor) return;
     setBusy(true);
     setError(null);
     setStatus(isFollowing ? 'Unfollowing…' : 'Following…');
@@ -191,7 +194,7 @@ export function LaunchInvestPanel({ strategy }: { strategy: LaunchStrategy }) {
         recordTransaction(hash);
       }
 
-      if (!isFollowing) {
+      if (!isFollowing && !isAuthor) {
         setStatus('Following the strategy…');
         const hash = await write({
           address: launchConfig.registryV2,
@@ -206,7 +209,7 @@ export function LaunchInvestPanel({ strategy }: { strategy: LaunchStrategy }) {
       }
 
       await Promise.all([usdc.refetch(), following.refetch(), followers.refetch()]);
-      setStatus('Basket bought and strategy followed');
+      setStatus(isAuthor ? 'Basket bought' : 'Basket bought and strategy followed');
     } catch (cause) {
       setError(errorLine(cause));
       setStatus(null);
@@ -246,16 +249,22 @@ export function LaunchInvestPanel({ strategy }: { strategy: LaunchStrategy }) {
           disabled={busy || !enabled}
           className="inline-flex h-10 items-center gap-2 rounded-lg bg-brand px-5 text-[12.5px] font-semibold text-[#07130D] transition-colors hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-50">
           <Check className="size-3.5" aria-hidden />
-          {busy ? 'Working…' : 'Invest and follow'}
+          {busy ? 'Working…' : isAuthor ? 'Invest in your basket' : 'Invest and follow'}
         </button>
         <button
           type="button"
           onClick={() => void toggleFollow()}
-          disabled={busy || !enabled}
+          disabled={busy || !enabled || isAuthor}
           className="inline-flex h-10 items-center gap-2 rounded-lg border border-stroke-raised px-4 text-[12px] font-semibold text-ink-secondary transition-colors hover:border-brand/40 hover:text-ink-primary disabled:cursor-not-allowed disabled:opacity-50">
-          {isFollowing ? 'Unfollow' : 'Follow'}
+          {isAuthor ? 'Author' : isFollowing ? 'Unfollow' : 'Follow'}
         </button>
       </div>
+
+      {isAuthor ? (
+        <p className="mt-2 text-[10.5px] text-ink-faint">
+          You authored this strategy. The follow step is skipped; another wallet can follow it.
+        </p>
+      ) : null}
 
       <div className="mt-4 rounded-lg border border-stroke-hairline bg-fill-subtle p-3">
         <ul className="space-y-1.5">
