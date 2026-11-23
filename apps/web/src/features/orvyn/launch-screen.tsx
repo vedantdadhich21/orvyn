@@ -18,7 +18,9 @@ import {
   useWriteContract,
 } from 'wagmi';
 
+import { AllocationRing } from '@/components/orvyn/allocation-ring';
 import { Chip, Display, Num, Panel, SandboxNote, SectionLabel } from '@/components/primitives';
+import { ScreenField } from '@/components/screen-field';
 import {
   ORVYN_EXCHANGE_ABI,
   TEST_STOCK_ABI,
@@ -253,8 +255,14 @@ export function LaunchScreen({
 
   return (
     <div className="space-y-8">
-      <div>
-        <div className="flex flex-wrap items-center gap-2">
+      <div className="relative">
+        <ScreenField ramp="portfolio" height={280} intensity={0.5} />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(90deg,#111214_0%,rgba(17,18,20,0.92)_30%,rgba(17,18,20,0.55)_58%,rgba(17,18,20,0.12)_82%,transparent_100%)]"
+        />
+        <div className="relative">
+          <div className="flex flex-wrap items-center gap-2">
           <Chip tone="neutral">Testnet market</Chip>
           <Chip tone="amber">Demo oracle</Chip>
           <SandboxNote>Test tokens · no real value</SandboxNote>
@@ -272,6 +280,31 @@ export function LaunchScreen({
           See the live counts
           <ArrowRight className="size-3" aria-hidden />
         </Link>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-3 gap-3">
+        <Panel className="p-4">
+          <span className="text-[9.5px] font-semibold tracking-[0.11em] text-ink-faint uppercase">
+            Stocks
+          </span>
+          <Num className="mt-1 block text-xl font-semibold">{launchStocks.length}</Num>
+          <span className="text-[10px] text-ink-faint">On the market</span>
+        </Panel>
+        <Panel className="p-4">
+          <span className="text-[9.5px] font-semibold tracking-[0.11em] text-ink-faint uppercase">
+            Strategies
+          </span>
+          <Num className="mt-1 block text-xl font-semibold">{strategies.length}</Num>
+          <span className="text-[10px] text-ink-faint">On registry v2</span>
+        </Panel>
+        <Panel className="p-4">
+          <span className="text-[9.5px] font-semibold tracking-[0.11em] text-ink-faint uppercase">
+            Oracle
+          </span>
+          <span className="mt-1 block text-xl font-semibold text-brand-soft">Demo</span>
+          <span className="text-[10px] text-ink-faint">Eight decimal feed</span>
+        </Panel>
       </div>
 
       {error ? (
@@ -382,8 +415,11 @@ export function LaunchScreen({
 
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           {orderedPrices.map((stock) => (
-            <Panel key={stock.ticker} className="flex items-center justify-between gap-4 p-4">
-              <div className="min-w-0">
+            <Panel key={stock.ticker} className="flex items-center gap-3 p-4">
+              <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-brand/20 bg-brand/[0.08] text-[10px] font-semibold tracking-[0.08em] text-brand-soft">
+                {stock.ticker.slice(0, 2)}
+              </span>
+              <div className="min-w-0 flex-1">
                 <p className="flex items-baseline gap-2">
                   <Num className="text-[13px] font-semibold">{stock.ticker}</Num>
                   <span className="truncate text-[11px] text-ink-quaternary">{stock.name}</span>
@@ -503,11 +539,15 @@ export function LaunchScreen({
                   <div className="min-w-0">
                     <h3 className="truncate text-[13.5px] font-semibold">{strategy.name}</h3>
                     <p className="mt-1 text-[10.5px] text-ink-faint">
-                      <Num>#{strategy.id}</Num> · {shortAddress(strategy.author)} ·{' '}
+                      <Num>#{strategy.id}</Num> · v2 · {shortAddress(strategy.author)} ·{' '}
                       <Num>{strategy.followers}</Num> following
                     </p>
                   </div>
-                  <Chip tone="neutral">v2</Chip>
+                  {strategy.parsed ? (
+                    <AllocationRing weights={strategy.parsed.weights} size={46} stroke={6} />
+                  ) : (
+                    <Chip tone="neutral">v2</Chip>
+                  )}
                 </div>
 
                 {strategy.parsed ? (
@@ -531,6 +571,19 @@ export function LaunchScreen({
                 </Link>
               </Panel>
             ))}
+            <Panel className="flex flex-col justify-center border-dashed p-5">
+              <p className="text-[13px] font-semibold text-ink-secondary">Publish your own</p>
+              <p className="mt-1.5 max-w-[34ch] text-[11.5px] leading-relaxed text-ink-quaternary">
+                Build a plan, set the limits, and write it to registry v2. The line is public;
+                the holdings stay in your browser.
+              </p>
+              <Link
+                href="/create"
+                className="mt-4 inline-flex items-center gap-1.5 self-start rounded-lg border border-stroke-raised px-3.5 py-2 text-[11.5px] font-semibold text-ink-secondary transition-colors hover:border-brand/40 hover:text-ink-primary">
+                Start a portfolio
+                <ArrowRight className="size-3" aria-hidden />
+              </Link>
+            </Panel>
           </div>
         )}
       </section>

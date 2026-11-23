@@ -187,7 +187,7 @@ export function Panel({
   return (
     <div
       className={cn(
-        'specular relative overflow-hidden rounded-xl border border-stroke-hairline bg-surface',
+        'specular relative overflow-hidden rounded-xl border border-stroke-hairline bg-[linear-gradient(180deg,rgba(255,255,255,0.035)_0%,rgba(255,255,255,0.012)_34%,rgba(23,25,29,0.96)_100%)] shadow-[0_30px_80px_-56px_rgba(0,0,0,0.95)]',
         className,
       )}
       {...props}>
@@ -213,6 +213,10 @@ export function SectionLabel({
         'text-[10.5px] font-semibold tracking-[0.11em] text-ink-faint uppercase',
         className,
       )}>
+      <span
+        aria-hidden
+        className="mr-2 inline-block h-[2px] w-3.5 -translate-y-0.5 rounded-full bg-brand/55 align-middle"
+      />
       {children}
     </Tag>
   );

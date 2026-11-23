@@ -5,6 +5,7 @@ import { ArrowRight } from 'lucide-react';
 import { formatUnits, type Address } from 'viem';
 import { useConnection, useReadContract, useReadContracts } from 'wagmi';
 
+import { ALLOCATION_COLOURS, CASH_COLOUR } from '@/components/orvyn/allocation-ring';
 import { Chip, Display, Num, Panel, SandboxNote, SectionLabel } from '@/components/primitives';
 import { TEST_STOCK_ABI, TEST_USD_ABI } from '@/lib/orvyn/launch-contracts';
 import { launchConfig, launchStocks, USDC_DECIMALS } from '@/lib/orvyn/launch';
@@ -53,6 +54,17 @@ export function LaunchPortfolioScreen({ prices }: { prices: MarketPrice[] }) {
 
   const invested = positions.reduce((sum, position) => sum + position.value, 0);
   const total = invested + cash;
+  const segments = [
+    ...positions
+      .filter((position) => position.value > 0)
+      .map((position, index) => ({
+        label: position.ticker,
+        value: position.value,
+        colour: ALLOCATION_COLOURS[index % ALLOCATION_COLOURS.length],
+      })),
+    ...(cash > 0 ? [{ label: 'Cash', value: cash, colour: CASH_COLOUR }] : []),
+  ];
+  const segmentTotal = segments.reduce((sum, segment) => sum + segment.value, 0);
 
   return (
     <div className="space-y-8">
@@ -106,6 +118,35 @@ export function LaunchPortfolioScreen({ prices }: { prices: MarketPrice[] }) {
               <SectionLabel as="h2">Positions</SectionLabel>
               <Num className="text-[10.5px] text-ink-faint">{shortAddress(address)}</Num>
             </div>
+            {segments.length > 0 ? (
+              <div className="mt-3">
+                <div
+                  aria-hidden
+                  className="flex h-2.5 overflow-hidden rounded-pill border border-stroke-hairline bg-fill-muted">
+                  {segments.map((segment) => (
+                    <div
+                      key={segment.label}
+                      style={{
+                        width: `${Math.max(0, (segment.value / segmentTotal) * 100)}%`,
+                        backgroundColor: segment.colour,
+                      }}
+                    />
+                  ))}
+                </div>
+                <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
+                  {segments.map((segment) => (
+                    <span key={segment.label} className="text-[10px] text-ink-faint">
+                      <span
+                        aria-hidden
+                        className="mr-1 inline-block size-1.5 rounded-full align-middle"
+                        style={{ backgroundColor: segment.colour }}
+                      />
+                      {segment.label}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ) : null}
             <div className="-mx-5 mt-3 overflow-x-auto px-5 sm:mx-0 sm:px-0">
               <table className="w-full min-w-[420px] border-collapse text-left">
                 <thead>

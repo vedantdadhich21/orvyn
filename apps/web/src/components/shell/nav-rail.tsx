@@ -70,7 +70,7 @@ export function NavRail({ onNavigate }: { onNavigate?: () => void }) {
             className={cn(
               'group flex items-center gap-3 rounded-lg px-2.5 py-2 text-[13.5px] font-medium transition-colors',
               active
-                ? 'bg-fill-active text-ink-primary'
+                ? 'bg-fill-active text-ink-primary shadow-[inset_2px_0_0_#2BD98B]'
                 : 'text-ink-tertiary hover:bg-fill-press hover:text-ink-secondary',
             )}>
             <Icon className={cn('size-4 shrink-0', active && 'text-brand-soft')} aria-hidden />

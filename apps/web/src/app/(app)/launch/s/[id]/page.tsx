@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
 
+import { AllocationRing } from '@/components/orvyn/allocation-ring';
 import { Chip, Display, Num, Panel, SandboxNote, SectionLabel } from '@/components/primitives';
 import { CopyStrategyButton } from '@/features/orvyn/copy-strategy-button';
 import { LaunchInvestPanel } from '@/features/orvyn/launch-invest-panel';
@@ -107,7 +108,10 @@ export default async function LaunchStrategyPage({ params }: Props) {
         <>
           <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px]">
             <Panel className="p-5">
-              <SectionLabel as="h2">Targets</SectionLabel>
+              <div className="flex items-start justify-between gap-3">
+                <SectionLabel as="h2">Targets</SectionLabel>
+                {parsed ? <AllocationRing weights={parsed.weights} size={64} stroke={8} /> : null}
+              </div>
               <ul className="mt-3 space-y-3">
                 {ordered.map(([ticker, weight]) => (
                   <li key={ticker}>

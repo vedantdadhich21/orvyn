@@ -33,7 +33,7 @@ export function AppShell({
    * as soon as the permanent rail takes over.
    */
   useEffect(() => {
-    const desktop = window.matchMedia('(min-width: 1024px)');
+    const desktop = window.matchMedia('(min-width: 960px)');
     const closeOnDesktop = () => {
       if (desktop.matches) setOpen(false);
     };
@@ -48,13 +48,13 @@ export function AppShell({
 
   return (
     <div className="flex min-h-dvh">
-      <aside className="sticky top-0 hidden h-dvh w-[228px] shrink-0 border-r border-stroke-hairline bg-surface-sunken lg:block">
+      <aside className="sticky top-0 hidden h-dvh w-[228px] shrink-0 border-r border-stroke-hairline bg-surface-sunken min-[960px]:block">
         <NavRail />
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Narrow-screen header. Hidden once the rail is permanent. */}
-        <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-stroke-hairline bg-bg/85 px-4 py-3 backdrop-blur-xl lg:hidden">
+        <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-stroke-hairline bg-bg/85 px-4 py-3 backdrop-blur-xl min-[960px]:hidden">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" aria-label="Open navigation">
@@ -79,8 +79,13 @@ export function AppShell({
         </header>
 
         <div className="flex min-w-0 flex-1">
-          <main className="relative min-w-0 flex-1">
-            <div className="mx-auto w-full max-w-[860px] px-5 py-8 sm:px-8 lg:py-12">
+          <main className="relative isolate min-w-0 flex-1">
+            <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+              <div className="absolute -top-40 right-[-8%] h-[520px] w-[520px] rounded-full bg-brand/[0.055] blur-[120px]" />
+              <div className="absolute top-[38%] left-[-12%] h-[420px] w-[420px] rounded-full bg-brand-deep/[0.05] blur-[120px]" />
+              <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.022)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.022)_1px,transparent_1px)] bg-[size:34px_34px] opacity-60 [mask-image:radial-gradient(ellipse_at_top,black_18%,transparent_76%)]" />
+            </div>
+            <div className="mx-auto w-full max-w-[860px] px-5 py-8 sm:px-8 min-[960px]:py-12">
               {children}
               <SiteFooter />
             </div>
