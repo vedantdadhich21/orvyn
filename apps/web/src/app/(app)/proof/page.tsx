@@ -5,7 +5,7 @@ import { ArrowRight, ExternalLink } from 'lucide-react';
 import { Chip, Display, Num, Panel, SandboxNote, SectionLabel } from '@/components/primitives';
 import { explorerAddressUrl, strategyRegistryAddress } from '@/lib/orvyn/registry';
 import { readRegistryCount, readStrategies } from '@/lib/orvyn/registry-read';
-import { readLaunchProof } from '@/server/launch/proof';
+import { readLaunchMarketProof, readLaunchProof } from '@/server/launch/proof';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,13 +22,15 @@ export default async function ProofPage() {
   let entries = [] as Awaited<ReturnType<typeof readStrategies>>;
   let failed = false;
   let launchProof: Awaited<ReturnType<typeof readLaunchProof>> = null;
+  let launchMarket: Awaited<ReturnType<typeof readLaunchMarketProof>> = null;
 
   if (strategyRegistryAddress) {
     try {
-      [count, entries, launchProof] = await Promise.all([
+      [count, entries, launchProof, launchMarket] = await Promise.all([
         readRegistryCount({ address: strategyRegistryAddress }),
         readStrategies({ address: strategyRegistryAddress, limit: 50 }),
         readLaunchProof(),
+        readLaunchMarketProof(),
       ]);
     } catch {
       failed = true;
@@ -135,6 +137,38 @@ export default async function ProofPage() {
                     {launchProof.eventsToday}
                   </Num>
                   <p className="mt-1 text-[10.5px] text-ink-faint">Onchain actions indexed</p>
+                </Panel>
+              </div>
+            </div>
+          ) : null}
+
+          {launchMarket ? (
+            <div>
+              <div className="flex flex-wrap items-baseline justify-between gap-2">
+                <SectionLabel as="h2">Launch market</SectionLabel>
+                <Link
+                  href="/launch/proof"
+                  className="inline-flex items-center gap-1.5 text-[10.5px] font-medium text-ink-tertiary transition-colors hover:text-ink-secondary">
+                  Full launch proof
+                  <ExternalLink className="size-3" aria-hidden />
+                </Link>
+              </div>
+              <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <Panel className="p-5">
+                  <SectionLabel as="h3">Strategies</SectionLabel>
+                  <Num className="mt-2 block text-3xl font-semibold">{launchMarket.strategies}</Num>
+                </Panel>
+                <Panel className="p-5">
+                  <SectionLabel as="h3">Traders</SectionLabel>
+                  <Num className="mt-2 block text-3xl font-semibold">{launchMarket.traders}</Num>
+                </Panel>
+                <Panel className="p-5">
+                  <SectionLabel as="h3">Follows</SectionLabel>
+                  <Num className="mt-2 block text-3xl font-semibold">{launchMarket.follows}</Num>
+                </Panel>
+                <Panel className="p-5">
+                  <SectionLabel as="h3">Trades</SectionLabel>
+                  <Num className="mt-2 block text-3xl font-semibold">{launchMarket.trades}</Num>
                 </Panel>
               </div>
             </div>
