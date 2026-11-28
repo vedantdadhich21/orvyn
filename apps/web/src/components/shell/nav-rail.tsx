@@ -37,7 +37,7 @@ function isActive(pathname: string, href: string) {
       pathname === '/launch/proof'
     );
   }
-  if (href === '/launch/portfolio') return pathname === '/launch/portfolio';
+  if (href === '/launch/portfolio') return pathname === '/launch/portfolio' || pathname === '/mainnet';
   if (href === '/create') {
     return ['/create', '/allocate', '/rules', '/portfolio', '/simulate', '/publish'].some(
       (path) => pathname === path || pathname.startsWith(`${path}/`),
@@ -46,7 +46,13 @@ function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function NavRail({ onNavigate }: { onNavigate?: () => void }) {
+export function NavRail({
+  onNavigate,
+  mainnet = false,
+}: {
+  onNavigate?: () => void;
+  mainnet?: boolean;
+}) {
   const pathname = usePathname();
 
   return (
@@ -85,10 +91,10 @@ export function NavRail({ onNavigate }: { onNavigate?: () => void }) {
 
       <div className="mt-auto space-y-2 pt-4">
         <Chip tone="neutral" className="w-full justify-center">
-          Simulated · Base Sepolia
+          {mainnet ? 'Read only · Base Mainnet' : 'Simulated · Base Sepolia'}
         </Chip>
         <p className="px-2.5 text-[10.5px] leading-relaxed text-ink-faint">
-          No money moves in Chapter 1.
+          {mainnet ? 'No transaction or signature required.' : 'No money moves in Chapter 1.'}
         </p>
       </div>
     </nav>

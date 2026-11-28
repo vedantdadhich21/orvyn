@@ -7,7 +7,7 @@ import Link from 'next/link';
  * Until the test-token MVP lands, the honest label is simulated value, not
  * test tokens. The wording changes in one place when that ships.
  */
-export function SiteFooter() {
+export function SiteFooter({mainnet = false}: {mainnet?: boolean}) {
   return (
     <footer className="mt-12 border-t border-stroke-hairline pt-5">
       <nav aria-label="Trust and background" className="flex flex-wrap items-center gap-x-5 gap-y-2">
@@ -25,6 +25,11 @@ export function SiteFooter() {
           href="/proof"
           className="text-[10.5px] font-medium text-ink-tertiary transition-colors hover:text-ink-secondary">
           Proof
+        </Link>
+        <Link
+          href="/mainnet"
+          className="text-[10.5px] font-medium text-ink-tertiary transition-colors hover:text-ink-secondary">
+          Mainnet reader
         </Link>
         <Link
           href="/how-it-works"
@@ -45,7 +50,9 @@ export function SiteFooter() {
         </a>
       </nav>
       <p className="mt-2 text-[10.5px] leading-relaxed text-ink-faint">
-        Simulated. No real value. Not investment advice.
+        {mainnet
+          ? 'Read only. Reference data, not investment advice.'
+          : 'Simulated. No real value. Not investment advice.'}
       </p>
     </footer>
   );
